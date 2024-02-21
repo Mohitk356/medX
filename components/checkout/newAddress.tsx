@@ -37,9 +37,7 @@ function NewAddress(props) {
     queryFn: () => getCountries(),
     keepPreviousData: true,
   });
-  const [dialcountry, setdialcountry] = useState<any>(
-    allCountries?.filter((val) => val.curr === "AED")[0]
-  );
+  const [dialcountry, setdialcountry] = useState(allCountries[0]);
   const [selectAddressModal, setSelectAddressModal] = useState(false);
   const [isAddressUpdating, setIsAddressUpdating] = useState(false);
 
@@ -165,10 +163,9 @@ function NewAddress(props) {
                         <Listbox.Option
                           key={personIdx}
                           className={({ active }) =>
-                            `relative cursor-default select-none py-1 md:py-2 pl-3 sm:pl-5 md:pl-7 pr-2 md:pr-4 ${
-                              active
-                                ? "bg-amber-100 text-amber-900"
-                                : "text-gray-900"
+                            `relative cursor-default select-none py-1 md:py-2 pl-3 sm:pl-5 md:pl-7 pr-2 md:pr-4 ${active
+                              ? "bg-amber-100 text-amber-900"
+                              : "text-gray-900"
                             }`
                           }
                           value={country?.countryName}
@@ -176,14 +173,13 @@ function NewAddress(props) {
                           {({ selected }) => (
                             <>
                               <span
-                                className={`block truncate ${
-                                  selected ? "font-medium" : "font-normal"
-                                }`}
+                                className={`block truncate ${selected ? "font-medium" : "font-normal"
+                                  }`}
                               >
                                 {country?.countryName}
                               </span>
                               {country?.countryName ===
-                              props.userAddress?.country ? (
+                                props.userAddress?.country ? (
                                 <span className="absolute inset-y-0 right-5 flex items-center pr-3 text-amber-600">
                                   <FlatIcon className="flaticon-check text-primary" />
                                 </span>
@@ -231,10 +227,9 @@ function NewAddress(props) {
                         <Listbox.Option
                           key={personIdx}
                           className={({ active }) =>
-                            `relative cursor-default select-none py-1 md:py-2 pl-3 sm:pl-5 md:pl-7 pr-2 md:pr-4 ${
-                              active
-                                ? "bg-amber-100 text-amber-900"
-                                : "text-gray-900"
+                            `relative cursor-default select-none py-1 md:py-2 pl-3 sm:pl-5 md:pl-7 pr-2 md:pr-4 ${active
+                              ? "bg-amber-100 text-amber-900"
+                              : "text-gray-900"
                             }`
                           }
                           value={state}
@@ -242,9 +237,8 @@ function NewAddress(props) {
                           {({ selected }) => (
                             <>
                               <span
-                                className={`block truncate ${
-                                  selected ? "font-medium" : "font-normal"
-                                }`}
+                                className={`block truncate ${selected ? "font-medium" : "font-normal"
+                                  }`}
                               >
                                 {state}
                               </span>
@@ -314,75 +308,75 @@ function NewAddress(props) {
               Phone <span className="text-primary">*</span>
             </p>
             <div className="flex w-full ">
-            <Menu
-                  as="div"
-                  className="w-[15%] relative text-left flex justify-center items-center  "
+              <Menu
+                as="div"
+                className="w-[15%] relative text-left flex justify-center items-center  "
+              >
+                <div className="flex justify-center items-center w-full">
+                  <Menu.Button className="w-full px-[4px] sm:px-[6px] md:px-[8px] lg:px-[10px] py-[9px] sm:py-[11px] md:py-[13px] lg:py-[7px]   mb-[15px]  bg-gray-100 border  border-gray-100  ">
+                    <div className="flex items-center gap-1 md:gap-2">
+                      <ReactCountryFlag countryCode={dialcountry?.icon} svg />
+                      <h4 className="lg:text-base md:text-sm text-xs">
+                        {dialcountry?.code}
+                      </h4>
+                      <FlatIcon className="flaticon-arrow-down-2 text-xs md:text-sm" />
+                    </div>
+                  </Menu.Button>
+                </div>
+                <Transition
+                  as={Fragment}
+                  enter="transition ease-out duration-100"
+                  enterFrom="transform opacity-0 scale-95"
+                  enterTo="transform opacity-100 scale-100"
+                  leave="transition ease-in duration-75"
+                  leaveFrom="transform opacity-100 scale-100"
+                  leaveTo="transform opacity-0 scale-95"
                 >
-                  <div className="flex justify-center items-center w-full">
-                    <Menu.Button className="w-full px-[4px] sm:px-[6px] md:px-[8px] lg:px-[10px] py-[9px] sm:py-[11px] md:py-[13px] lg:py-[7px]   mb-[15px]  bg-gray-100 border  border-gray-100  ">
-                      <div className="flex items-center gap-1 md:gap-2">
-                        <ReactCountryFlag countryCode={dialcountry?.icon} svg />
-                        <h4 className="lg:text-base md:text-sm text-xs">
-                          {dialcountry?.code}
-                        </h4>
-                        <FlatIcon className="flaticon-arrow-down-2 text-xs md:text-sm" />
-                      </div>
-                    </Menu.Button>
-                  </div>
-                  <Transition
-                    as={Fragment}
-                    enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
-                    leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95"
-                  >
-                    <Menu.Items className="z-50 absolute left-0  top-full w-52 sm:w-48 lg:w-56 origin-top-left divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none max-h-[25vh] overflow-y-auto">
-                      {allCountries?.map((country, id) => {
-                        return (
-                          <div className="px-1 py-1 " key={id}>
-                            <Menu.Item>
-                              {({ active }) => (
-                                <button
-                                onClick={(e) => {
-                                  props.handleChange('ccode', country?.code);
+                  <Menu.Items className="z-50 absolute left-0  top-full w-52 sm:w-48 lg:w-56 origin-top-left divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none max-h-[25vh] overflow-y-auto">
+                    {allCountries?.map((country, id) => {
+                      return (
+                        <div className="px-1 py-1 " key={id}>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <button
+                                onClick={() => {
+                                  setdialcountry(country);
+                                  props.handleChange("ccode", country.code);
                                 }}
-                                  className={`${
-                                    active
-                                      ? "bg-primary text-white"
-                                      : "text-gray-900"
+                                className={`${active
+                                  ? "bg-primary text-white"
+                                  : "text-gray-900"
                                   } group flex gap-4 w-full items-center rounded-md px-1 py-1 lg:px-2 lg:py-2 text-sm`}
-                                >
-                                  <ReactCountryFlag
-                                    countryCode={country?.icon}
-                                    svg
-                                  />
-                                  {/* {active ? "active" : "notActive"} */}
-                                  {country?.code}
+                              >
+                                <ReactCountryFlag
+                                  countryCode={country?.icon}
+                                  svg
+                                />
+                                {/* {active ? "active" : "notActive"} */}
+                                {country?.code}
 
-                                  <h1 className=" line-clamp-1 text-left">
-                                    {country?.name}
-                                  </h1>
-                                </button>
-                              )}
-                            </Menu.Item>
-                          </div>
-                        );
-                      })}
-                    </Menu.Items>
-                  </Transition>
-                </Menu>
-            <input
-              className="w-[83%] py-1 h-7 sm:h-8 md:h-10  border border-neutral-300 px-2 rounded-md text-sm md:text-base focus:outline-primary"
-              type="text"
-              value={props.userAddress?.phoneNo}
-              name="phoneNo"
-              onChange={(e) => {
-                props.handleChange(e.target.name, e.target.value);
-              }}
-              id=""
-            />
+                                <h1 className=" line-clamp-1 text-left">
+                                  {country?.name}
+                                </h1>
+                              </button>
+                            )}
+                          </Menu.Item>
+                        </div>
+                      );
+                    })}
+                  </Menu.Items>
+                </Transition>
+              </Menu>
+              <input
+                className="w-[83%] py-1 h-7 sm:h-8 md:h-10  border border-neutral-300 px-2 rounded-md text-sm md:text-base focus:outline-primary"
+                type="text"
+                value={props.userAddress?.phoneNo}
+                name="phoneNo"
+                onChange={(e) => {
+                  props.handleChange(e.target.name, e.target.value);
+                }}
+                id=""
+              />
             </div>
           </div>
 
