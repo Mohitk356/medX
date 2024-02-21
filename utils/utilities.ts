@@ -20,6 +20,7 @@ export const initialAddress = {
     stateCode: "",
     defaultAddress: true,
     country: "",
+    ccode: "+971",
 };
 
 export const paymentMethods = [
