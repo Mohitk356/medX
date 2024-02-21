@@ -30,5 +30,7 @@ export const POST = async (req: Request) => {
 
 
     // const response = await fetchHomeSections();
+    console.log("Server Err0r = ", response);
+
     return NextResponse.json(response);
 } 

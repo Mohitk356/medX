@@ -17,43 +17,47 @@ const StripeWrapper = ({
   const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC);
 
   async function getClientSecret() {
-    let amount: number;
-    if (
-      stripeData?.currency === "OMR" ||
-      stripeData?.currency === "KWD" ||
-      stripeData?.currency === "BHD"
-    ) {
-      amount = makeLeastSignificantDigitZero(
-        parseFloat(parseFloat(stripeData?.amount).toFixed(2)) * 1000
-      );
-    } else {
-      amount = parseInt(
-        (parseFloat(parseFloat(stripeData?.amount).toFixed(2)) * 100)
-          .toString()
-          .split(".")[0]
-      );
-    }
-
-    const res = await fetch(
-      process.env.NEXT_PUBLIC_API_DOMAIN + "/api/stripe-intent",
-      {
-        method: "POST",
-        body: JSON.stringify({
-          ...stripeData,
-          amount,
-          // amount: 5120,
-        }),
-        headers: {
-          "content-type": "application/json",
-        },
+    try {
+      let amount: number;
+      if (
+        stripeData?.currency === "OMR" ||
+        stripeData?.currency === "KWD" ||
+        stripeData?.currency === "BHD"
+      ) {
+        amount = makeLeastSignificantDigitZero(
+          parseFloat(parseFloat(stripeData?.amount).toFixed(2)) * 1000
+        );
+      } else {
+        amount = parseInt(
+          (parseFloat(parseFloat(stripeData?.amount).toFixed(2)) * 100)
+            .toString()
+            .split(".")[0]
+        );
       }
-    );
 
-    console.log("STRIPE SECRET FOR", amount);
+      const res = await fetch(
+        process.env.NEXT_PUBLIC_API_DOMAIN + "/api/stripe-intent",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            ...stripeData,
+            amount,
+            // amount: 5120,
+          }),
+          headers: {
+            "content-type": "application/json",
+          },
+        }
+      );
 
-    const data = await res?.json();
+      console.log("STRIPE SECRET FOR", amount);
 
-    setSecret(data?.clientSecret);
+      const data = await res?.json();
+
+      setSecret(data?.clientSecret);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   useEffect(() => {
