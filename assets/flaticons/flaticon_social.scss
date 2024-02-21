@@ -1,0 +1,113 @@
+$flaticon_social-font: "flaticon_social";
+
+@font-face {
+    font-family: $flaticon_social-font;
+    src: url("./flaticon_social.ttf?076d062a3a1440814ccb9cb2182ab2ce") format("truetype"),
+url("./flaticon_social.woff?076d062a3a1440814ccb9cb2182ab2ce") format("woff"),
+url("./flaticon_social.woff2?076d062a3a1440814ccb9cb2182ab2ce") format("woff2"),
+url("./flaticon_social.eot?076d062a3a1440814ccb9cb2182ab2ce#iefix") format("embedded-opentype"),
+url("./flaticon_social.svg?076d062a3a1440814ccb9cb2182ab2ce#flaticon_social") format("svg");
+}
+
+i[class^="flaticon-"]:before, i[class*=" flaticon-"]:before {
+    font-family: flaticon_social !important;
+    font-style: normal;
+    font-weight: normal !important;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+$flaticon_social-map: (
+    "whatsapp": "\f101",
+    "address": "\f102",
+    "list": "\f103",
+    "cart": "\f104",
+    "plus": "\f105",
+    "check": "\f106",
+    "email": "\f107",
+    "arrow-go": "\f108",
+    "sale": "\f109",
+    "phone": "\f10a",
+    "support": "\f10b",
+    "clock": "\f10c",
+    "heart": "\f10d",
+    "star": "\f10e",
+    "minus": "\f10f",
+    "grid": "\f110",
+    "arrow-right": "\f111",
+    "close": "\f112",
+    "arrow-down-2": "\f113",
+    "search": "\f114",
+    "user": "\f115",
+    "whatsapp-1": "\f116",
+);
+
+.flaticon-whatsapp:before {
+    content: map-get($flaticon_social-map, "whatsapp");
+}
+.flaticon-address:before {
+    content: map-get($flaticon_social-map, "address");
+}
+.flaticon-list:before {
+    content: map-get($flaticon_social-map, "list");
+}
+.flaticon-cart:before {
+    content: map-get($flaticon_social-map, "cart");
+}
+.flaticon-plus:before {
+    content: map-get($flaticon_social-map, "plus");
+}
+.flaticon-check:before {
+    content: map-get($flaticon_social-map, "check");
+}
+.flaticon-email:before {
+    content: map-get($flaticon_social-map, "email");
+}
+.flaticon-arrow-go:before {
+    content: map-get($flaticon_social-map, "arrow-go");
+}
+.flaticon-sale:before {
+    content: map-get($flaticon_social-map, "sale");
+}
+.flaticon-phone:before {
+    content: map-get($flaticon_social-map, "phone");
+}
+.flaticon-support:before {
+    content: map-get($flaticon_social-map, "support");
+}
+.flaticon-clock:before {
+    content: map-get($flaticon_social-map, "clock");
+}
+.flaticon-heart:before {
+    content: map-get($flaticon_social-map, "heart");
+}
+.flaticon-star:before {
+    content: map-get($flaticon_social-map, "star");
+}
+.flaticon-minus:before {
+    content: map-get($flaticon_social-map, "minus");
+}
+.flaticon-grid:before {
+    content: map-get($flaticon_social-map, "grid");
+}
+.flaticon-arrow-right:before {
+    content: map-get($flaticon_social-map, "arrow-right");
+}
+.flaticon-close:before {
+    content: map-get($flaticon_social-map, "close");
+}
+.flaticon-arrow-down-2:before {
+    content: map-get($flaticon_social-map, "arrow-down-2");
+}
+.flaticon-search:before {
+    content: map-get($flaticon_social-map, "search");
+}
+.flaticon-user:before {
+    content: map-get($flaticon_social-map, "user");
+}
+.flaticon-whatsapp-1:before {
+    content: map-get($flaticon_social-map, "whatsapp-1");
+}
