@@ -193,7 +193,7 @@ const ProfileClient = ({ cookie }) => {
               </h3>
               <h3 className=" tracking-tight text-black text-sm md:text-base  font-semibold mt-2">
                 {isClient && userData && userData.phoneNo
-                  ? userData.phoneNo
+                  ? `${userData.phoneNo}`
                   : "Your Phone Number"}
               </h3>
             </div>

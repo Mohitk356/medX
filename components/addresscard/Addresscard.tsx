@@ -4,15 +4,11 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  RemoveAddress,
-  getUserData
-} from "../../utils/databaseService";
+import { RemoveAddress, getUserData } from "../../utils/databaseService";
 import EditDetailsModal from "../editdetailsmodal/EditDetailsModal";
 
 const Addresscard = ({ singleaddress, setIsDeleting }) => {
   const queryClient = useQueryClient();
-
 
   const { data: userData } = useQuery({
     queryKey: ["userData"],
@@ -74,26 +70,27 @@ const Addresscard = ({ singleaddress, setIsDeleting }) => {
           <span className=" text-black">
             {" "}
             {singleaddress && singleadd.phoneNo
-              ? singleadd.phoneNo
+              ? `${singleadd.ccode || ""} ${singleadd.phoneNo}`
               : "Phone Number"}
           </span>
         </h3>
       </div>
 
       <div className="flex h-[27px] sm:h-[36px] md:h-[45px] lg:h-[54px] bg-[#FAEFEF] mt-1 sm:mt-2 md:mt-3  rounded-br-[20px] border-t border-[#E64040]">
-        <div className="w-[50%] flex justify-center  cursor-pointer items-center border-r border-[#E64040]" onClick={() => handleRemoveAddress(singleadd.id)}>
-          <p
-            className="text-primary text-xs md:text-sm font-semibold   tracking-tight"
-          >
+        <div
+          className="w-[50%] flex justify-center  cursor-pointer items-center border-r border-[#E64040]"
+          onClick={() => handleRemoveAddress(singleadd.id)}
+        >
+          <p className="text-primary text-xs md:text-sm font-semibold   tracking-tight">
             REMOVE
           </p>
         </div>
         {/* <div className="border-r-2 border-primary"></div> */}
-        <div className="w-[50%]  flex justify-center  cursor-pointer items-center " onClick={handleOpenEditModal}>
-          <p
-            className="text-black text-xs md:text-sm font-semibold tracking-tight"
-   
-          >
+        <div
+          className="w-[50%]  flex justify-center  cursor-pointer items-center "
+          onClick={handleOpenEditModal}
+        >
+          <p className="text-black text-xs md:text-sm font-semibold tracking-tight">
             EDIT
           </p>
         </div>

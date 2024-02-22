@@ -4,9 +4,14 @@ import { toast } from "react-toastify";
 import { UpdateEditDetails, getCountries } from "../../utils/databaseService";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CircularProgress } from "@mui/material";
-import { Listbox, Transition } from "@headlessui/react";
+import { Listbox, Menu, Transition } from "@headlessui/react";
 import FlatIcon from "../flatIcon/flatIcon";
-import { constant } from "../../utils/constants";
+import {
+  allCountries,
+  constant,
+  getCountryByCode,
+} from "../../utils/constants";
+import ReactCountryFlag from "react-country-flag";
 
 const EditDetailsModal = ({
   isOpen,
@@ -30,6 +35,7 @@ const EditDetailsModal = ({
     pincode: addressdetails.pincode || "",
     country: addressdetails.country || "",
     phoneNo: addressdetails.phoneNo || "",
+    ccode: addressdetails.ccode || "",
     defaultAddress: addressdetails.defaultAddress || false,
   });
 
@@ -37,6 +43,10 @@ const EditDetailsModal = ({
     const { name, value, type, checked } = e.target;
     const newValue = type === "checkbox" ? checked : value;
     setFormData({ ...formData, [name]: newValue });
+  };
+
+  const handleValueChange = (name, value) => {
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSave = async () => {
@@ -47,6 +57,7 @@ const EditDetailsModal = ({
       pincode: formData.pincode,
       country: formData.country,
       phoneNo: formData.phoneNo,
+      ccode: formData.ccode,
       defaultAddress: formData.defaultAddress,
       state: formData?.city,
     };
@@ -95,25 +106,37 @@ const EditDetailsModal = ({
                 />
               </div>
             </div>
+          </div>
 
-            <div className="w-full">
-              <h1 className="text-sm md:text-base font-normal  text-neutral-400  uppercase">
-                Mobile Number
-              </h1>
-              <div className=" w-[100%] rounded-md">
-                <input
-                  type="text"
-                  name="phoneNo"
-                  onChange={handleChange}
-                  value={formData.phoneNo}
-                  className="w-full h-6 sm:h-8 md:h-10 pb-1 border-b-2  border-neutral-300 focus:outline-none focus:border-neutral-500 text-sm md:text-base font-semibold"
-                  required
+          <div>
+            <h1 className="text-sm md:text-base font-normal  text-neutral-400  uppercase">
+              Mobile Number
+            </h1>
+            <div className="flex justify-start items-end">
+              <div className="w-100">
+                <EditCode
+                  dialcountry={getCountryByCode(formData.ccode)}
+                  onChenge={(e) => {
+                    handleValueChange("ccode", e);
+                  }}
                 />
+              </div>
+              <div className="w-full ">
+                <div className=" w-[100%] rounded-md">
+                  <input
+                    type="text"
+                    name="phoneNo"
+                    onChange={handleChange}
+                    value={formData.phoneNo}
+                    className="w-full h-6 sm:h-8 md:h-10 pb-1 border-b-2  border-neutral-300 focus:outline-none focus:border-neutral-500 text-sm md:text-base font-semibold"
+                    required
+                  />
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-4 md:gap-10 lg:gap-16 ">
+          <div className="flex flex-col md:flex-row gap-4 md:gap-10 lg:gap-16 z-0">
             <div className="w-full">
               <h1 className="text-sm md:text-base font-normal text-neutral-400 uppercase">
                 Country
@@ -376,3 +399,69 @@ const EditDetailsModal = ({
 };
 
 export default EditDetailsModal;
+
+// for edit country code phone
+function EditCode({
+  dialcountry,
+  onChenge,
+}: {
+  dialcountry: any;
+  onChenge: (e: any) => void;
+}) {
+  return (
+    <div className="">
+      <Menu
+        as="div"
+        className="w-[100px] relative text-left flex justify-center items-center   h-10 border-b-2  border-neutral-300 focus:outline-none focus:border-neutral-500"
+      >
+        <div className="flex justify-center items-center w-full">
+          <Menu.Button className="w-full  ">
+            <div className="flex items-center gap-1 md:gap-2">
+              <ReactCountryFlag countryCode={dialcountry?.icon} svg />
+              <h4 className="lg:text-base md:text-sm text-xs">
+                {dialcountry?.code}
+              </h4>
+              <FlatIcon className="flaticon-arrow-down-2 text-xs md:text-sm" />
+            </div>
+          </Menu.Button>
+        </div>
+        <Transition
+          as={Fragment}
+          enter="transition ease-out duration-100"
+          enterFrom="transform opacity-0 scale-95"
+          enterTo="transform opacity-100 scale-100"
+          leave="transition ease-in duration-75"
+          leaveFrom="transform opacity-100 scale-100"
+          leaveTo="transform opacity-0 scale-95"
+        >
+          <Menu.Items className="z-50 absolute left-0  top-full w-52 sm:w-48 lg:w-56 origin-top-left divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none max-h-[25vh] overflow-y-auto">
+            {allCountries?.map((country, id) => {
+              return (
+                <div className="px-1 py-1 " key={id}>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        onClick={() => onChenge(country.code)}
+                        className={`${
+                          active ? "bg-primary text-white" : "text-gray-900"
+                        } group flex gap-4 w-full items-center rounded-md px-1 py-1 lg:px-2 lg:py-2 text-sm`}
+                      >
+                        <ReactCountryFlag countryCode={country?.icon} svg />
+                        {/* {active ? "active" : "notActive"} */}
+                        {country?.code}
+
+                        <h1 className=" line-clamp-1 text-left">
+                          {country?.name}
+                        </h1>
+                      </button>
+                    )}
+                  </Menu.Item>
+                </div>
+              );
+            })}
+          </Menu.Items>
+        </Transition>
+      </Menu>
+    </div>
+  );
+}
