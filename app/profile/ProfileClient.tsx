@@ -186,6 +186,7 @@ const ProfileClient = ({ cookie }) => {
                   ? userData.name
                   : "Your Name"}
               </h3>
+
               <h3 className=" text-xs md:text-sm   tracking-tight text-black font-semibold">
                 {isClient && userData && userData.email
                   ? userData.email
