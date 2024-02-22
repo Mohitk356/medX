@@ -181,7 +181,7 @@ const ProfileClient = ({ cookie }) => {
             </div>
 
             <div className=" flex flex-col gap-1 md:items-center lg:items-start">
-              <h3 className=" tracking-tight text-black text-sm md:text-base  font-semibold">
+              <h3 className="tracking-tight text-black text-sm md:text-base  font-semibold">
                 {isClient && userData && userData.name
                   ? userData.name
                   : "Your Name"}
