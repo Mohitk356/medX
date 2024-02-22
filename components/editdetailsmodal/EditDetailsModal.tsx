@@ -38,6 +38,7 @@ const EditDetailsModal = ({
     ccode: addressdetails.ccode || "",
     defaultAddress: addressdetails.defaultAddress || false,
   });
+  console.log(formData);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
