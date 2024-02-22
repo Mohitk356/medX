@@ -10,7 +10,7 @@ import { initialAddress } from "../../utils/utilities";
 import Modal from "../Modal/modal";
 import { Listbox, Transition } from "@headlessui/react";
 import FlatIcon from "../flatIcon/flatIcon";
-import { constant } from "../../utils/constants";
+import { allCountries, constant } from "../../utils/constants";
 import { CircularProgress } from "@mui/material";
 import { toast } from "react-toastify";
 
@@ -57,7 +57,9 @@ export default function SelectUserAddressSection(props) {
             <p className="font-medium">
               Phone:{" "}
               <span className="text-gray-500">
-                {props.userData?.defaultAddress?.phoneNo}
+                {`${props.userData?.defaultAddress?.ccode || ""} ${
+                  props.userData?.defaultAddress?.phoneNo
+                }`}
               </span>
             </p>
             <p className="font-medium">
@@ -334,25 +336,41 @@ export default function SelectUserAddressSection(props) {
               />
             </div>
 
-            <div className=" flex gap-2 flex-col w-full md:w-[full]  my-1 md:my-2.5 ">
+            <div className="w-full flex gap-2 flex-col w-full md:w-[full]  my-1 md:my-2.5 ">
               <p className="text-neutral-600 text-[15px] font-semibold">
                 Phone <span className="text-primary">*</span>
               </p>
-              <input
-                className="py-1 h-7 sm:h-8 md:h-10  border border-neutral-300 px-2 rounded-md text-sm md:text-base focus:outline-primary"
-                type="text"
-                value={editModalState?.phoneNo}
-                name="phoneNo"
-                onChange={(e) => {
-                  handleChange(e.target.name, e.target.value);
-                }}
-                id=""
-              />
+              <div className="w-full flex gap-2">
+                <select
+                  defaultValue={editModalState?.ccode || allCountries[0].code}
+                  name="ccode"
+                  onChange={(e) => handleChange(e.target.name, e.target.value)}
+                  className="py-1 h-7 sm:h-8 md:h-10  border border-neutral-300 px-2 rounded-md text-sm md:text-base focus:outline-primary bg-white"
+                >
+                  {allCountries.map((e, i) => {
+                    return (
+                      <option value={e.code} key={e.icon}>
+                        {e.code}
+                      </option>
+                    );
+                  })}
+                </select>
+                <input
+                  className="py-1 h-7 sm:h-8 md:h-10 w-full  border border-neutral-300 px-2 rounded-md text-sm md:text-base focus:outline-primary"
+                  type="text"
+                  value={editModalState?.phoneNo}
+                  name="phoneNo"
+                  onChange={(e) => {
+                    handleChange(e.target.name, e.target.value);
+                  }}
+                  id=""
+                />
+              </div>
             </div>
 
             <div className=" flex gap-2 flex-col w-full md:w-[full]  my-1 md:my-2.5">
               <p className="text-neutral-600 text-[15px] font-semibold">
-                Postcode / ZIP 
+                Postcode / ZIP
               </p>
               <input
                 className="py-1 h-7 sm:h-8 md:h-10  border border-neutral-300 px-2 rounded-md text-sm md:text-base focus:outline-primary"
@@ -455,7 +473,7 @@ export default function SelectUserAddressSection(props) {
                         <p className="font-medium">
                           Phone:{" "}
                           <span className="text-gray-500">
-                            {address?.phoneNo}
+                            {`${address?.ccode || ""} ${address?.phoneNo}`}
                           </span>
                         </p>
                         <p className="font-medium">

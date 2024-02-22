@@ -189,3 +189,8 @@ export const allCountries = [
   { name: "Ukraine", code: "+380", icon: "UA", curr: "UAH" },
   { name: "Vietnam", code: "+84", icon: "VN", curr: "VND" },
 ];
+
+export function getCountryByCode(countryCode) {
+  const country = allCountries.find((c) => c.code === countryCode);
+  return country || null; // return null if the country code is not found
+}
