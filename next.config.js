@@ -8,7 +8,7 @@ const nextConfig = {
       "cdn.shopify.com",
       "upload.wikimedia.org",
       "www.medxpharmacy.com",
-      "gympower.co.uk"
+      "gympower.co.uk",
     ],
   },
   webpack: (config) => {

@@ -5,6 +5,7 @@ import {
   getCountries,
   updateDefaultAddress,
 } from "../../utils/databaseService";
+
 import { Fragment, useEffect, useState } from "react";
 import { initialAddress } from "../../utils/utilities";
 import Modal from "../Modal/modal";
@@ -20,6 +21,7 @@ export default function SelectUserAddressSection(props) {
     queryFn: () => getCountries(),
     keepPreviousData: true,
   });
+
   const [isAddressUpdating, setIsAddressUpdating] = useState(false);
   const queryClient = useQueryClient();
   const [isEditAddressOpen, setIsEditAddressOpen] = useState(false);
@@ -27,6 +29,8 @@ export default function SelectUserAddressSection(props) {
   const [editModalState, setEditModalState] = useState(props?.userAddress);
 
   const handleChange = (name, value) => {
+    console.log({ name, value });
+
     setEditModalState((val) => {
       return { ...val, [name]: value };
     });
@@ -342,14 +346,20 @@ export default function SelectUserAddressSection(props) {
               </p>
               <div className="w-full flex gap-2">
                 <select
-                  defaultValue={editModalState?.ccode || allCountries[0].code}
                   name="ccode"
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
                   className="py-1 h-7 sm:h-8 md:h-10  border border-neutral-300 px-2 rounded-md text-sm md:text-base focus:outline-primary bg-white"
                 >
                   {allCountries.map((e, i) => {
                     return (
-                      <option value={e.code} key={e.icon}>
+                      <option
+                        value={e.code}
+                        key={e.icon}
+                        selected={
+                          (editModalState?.ccode || allCountries[0].code) ==
+                          e.code
+                        }
+                      >
                         {e.code}
                       </option>
                     );
@@ -422,14 +432,17 @@ export default function SelectUserAddressSection(props) {
                   return;
                 }
                 setIsAddressUpdating(true);
-                await updateDefaultAddress(editModalState);
+                await updateDefaultAddress(
+                  editModalState,
+                  editModalState.addressId
+                );
                 await queryClient.invalidateQueries({ queryKey: ["userData"] });
                 props?.setUserAddress(editModalState);
                 setIsAddressUpdating(false);
                 setIsEditAddressOpen(false);
               }}
             >
-              Save
+              Save Address
             </button>
           </div>
         </div>
@@ -488,7 +501,10 @@ export default function SelectUserAddressSection(props) {
                           className="px-4 py-2 bg-primary rounded-md text-white"
                           onClick={async () => {
                             props.setIsAddressUpdating(true);
-                            await updateDefaultAddress(address);
+                            await updateDefaultAddress(
+                              address,
+                              address.addressId
+                            );
                             await queryClient.invalidateQueries({
                               queryKey: ["userData"],
                             });

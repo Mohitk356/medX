@@ -25,6 +25,7 @@ const MyAddresses = (addresses) => {
           Add Address
         </button>
       </div>
+
       {isNewAddressOpen && (
         <EditDetailsModal
           isOpen={isNewAddressOpen}
@@ -33,6 +34,7 @@ const MyAddresses = (addresses) => {
           isNewAddress={true}
         />
       )}
+
       <div className="flex flex-wrap gap-4 sm:gap-2 md:gap-3 lg:gap-4 justify-between">
         <Modal isOpen={isDeleting} setOpen={setIsDeleting}>
           <div className="flex flex-col gap-2 justify-center items-center">
