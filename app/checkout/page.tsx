@@ -174,7 +174,7 @@ const CheckoutPage = () => {
     }
 
     if (/^[0-9]{3,14}$/.test(phoneNo) === false) {
-      alert(phoneNo)
+      alert(phoneNo);
       toast.error("Enter valid phone number without country code.");
       return;
     }
@@ -182,7 +182,7 @@ const CheckoutPage = () => {
     if (
       addressToDeliver?.email &&
       /^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/.test(addressToDeliver?.email) ===
-      false
+        false
     ) {
       toast.error("Enter valid email.");
       return;
@@ -238,8 +238,8 @@ const CheckoutPage = () => {
       msgId: auth.currentUser?.uid
         ? doc(collection(db, "chats", auth.currentUser?.uid, "messages")).id
         : sessionStorage.getItem("guestLogin")
-          ? null
-          : "",
+        ? null
+        : "",
       userName: userData?.name || addressToDeliver?.name,
       region: "",
     };
@@ -269,6 +269,7 @@ const CheckoutPage = () => {
     if (saveAddress) {
       await addAddressToUser({ ...addressToDeliver, createdAt: new Date() });
     }
+
     orderId = (await addDoc(collection(db, "orders"), orderObj)).id;
 
     dispatch(reset());
@@ -408,8 +409,8 @@ const CheckoutPage = () => {
             ? paymentSummary?.totalPayable
             : userData?.wallet?.cashback
           : walletInfo?.maxWalletAmntPerOrder > paymentSummary?.totalPayable
-            ? paymentSummary?.totalPayable
-            : walletInfo?.maxWalletAmntPerOrder;
+          ? paymentSummary?.totalPayable
+          : walletInfo?.maxWalletAmntPerOrder;
       return setCashBackused(usableCashback);
     } else {
       setCashBackused(0);
@@ -444,8 +445,6 @@ const CheckoutPage = () => {
     }
     return false;
   }
-
-
 
   return (
     <div className="px-body ">
@@ -546,7 +545,7 @@ const CheckoutPage = () => {
                             currency: currency,
                             amount: isCashBackUsed
                               ? (paymentSummary?.totalPayable - cashBackUsed) *
-                              currRate
+                                currRate
                               : paymentSummary?.totalPayable * currRate,
                             user: {
                               name: addressToDeliver?.name,
@@ -604,7 +603,7 @@ const CheckoutPage = () => {
                           currency: currency,
                           amount: isCashBackUsed
                             ? (paymentSummary?.totalPayable - cashBackUsed) *
-                            currRate
+                              currRate
                             : paymentSummary?.totalPayable * currRate,
                           user: {
                             name: userData?.name,
