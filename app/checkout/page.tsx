@@ -69,12 +69,15 @@ const CheckoutPage = () => {
   const [userNote, setUserNote] = useState("");
   const [userName, setName]: any = useState({ first: "", last: "" });
   const [paymentSummary, setPaymentSummary] = useState(null);
+
   const [userAddress, setUserAddress] = useState(
     (userData && userData?.defaultAddress) || initialAddress
   );
+
   const [addressToDeliver, setAddressToDeliver] = useState(
     (userData && userData?.defaultAddress) || initialAddress
   );
+
   const [isNewAddress, setIsNewAddress] = useState(
     !(userData && userData?.defaultAddress)
   );
@@ -97,6 +100,7 @@ const CheckoutPage = () => {
       functions,
       "orders-getOrderPaymentDetails"
     );
+    // alert(JSON.stringify(getPaymentSummaryDetails));
     const isGst = await getGstAppilicableInfo();
     let data = {
       address: {
@@ -107,6 +111,7 @@ const CheckoutPage = () => {
       isGstApplicable: isGst,
       customDeliverySettings: null,
     };
+
     const res = await getPaymentSummaryDetails(data);
 
     setIsPaymentSummaryLoading(false);
@@ -174,7 +179,7 @@ const CheckoutPage = () => {
     }
 
     if (/^[0-9]{3,14}$/.test(phoneNo) === false) {
-      alert(phoneNo);
+      // alert(phoneNo);
       toast.error("Enter valid phone number without country code.");
       return;
     }
