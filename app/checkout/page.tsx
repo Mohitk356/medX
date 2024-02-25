@@ -124,6 +124,7 @@ const CheckoutPage = () => {
     setIsCouponApplied(false);
     setAppliedCouponAmount(null);
     setPaymentSummary(summaryData);
+    console.log("Summery ", summaryData);
   }
 
   const handleChange = (name, value) => {
@@ -217,6 +218,7 @@ const CheckoutPage = () => {
       billingAddress: addressToDeliver,
       userNote: userNote || "",
       currency,
+      description: "This IS For Test",
       autoConfirmOrder: true, // collection payment -> info
       storePickupObj: {},
       metaData: {

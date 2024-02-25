@@ -60,6 +60,7 @@ export default function StripeCheckout(props) {
         return_url: `${window.location.origin}/payment-success/?orderId=${docId}&mode=online`,
       },
     };
+    console.log("stripeObj", stripeObj);
 
     const result = await stripe.confirmPayment(stripeObj);
 
