@@ -27,7 +27,11 @@ import {
   getWalletInfo,
   updateDefaultAddress,
 } from "../../utils/databaseService";
-import { getCountry, initialAddress } from "../../utils/utilities";
+import {
+  getCountry,
+  initialAddress,
+  validateEmail,
+} from "../../utils/utilities";
 import Paymentmethods from "./Paymentmethods";
 import PlaceOrder from "./PlaceOrder";
 import SubtotalComponent from "./SubTotalComponent";
@@ -170,15 +174,20 @@ const CheckoutPage = () => {
       return;
     }
     // if(addressToDeliver?.country)
-    const { address, name, phoneNo, state, country }: any = {
+    const { address, name, phoneNo, state, country, email }: any = {
       ...addressToDeliver,
     };
 
     if (!address || !phoneNo || !state || !name || !country) {
       toast.error("Please enter address correctly");
       return;
+    } else if (!email) {
+      toast.error("Please Enter Your Email ID");
+      return;
+    } else if (!validateEmail(email)) {
+      toast.error("Invalid Email ID");
+      return;
     }
-
     if (/^[0-9]{3,14}$/.test(phoneNo) === false) {
       // alert(phoneNo);
       toast.error("Enter valid phone number without country code.");
@@ -452,6 +461,7 @@ const CheckoutPage = () => {
     }
     return false;
   }
+  console.log(userData);
 
   return (
     <div className="px-body ">
@@ -539,7 +549,8 @@ const CheckoutPage = () => {
                 addressToDeliver?.city &&
                 addressToDeliver?.state &&
                 addressToDeliver?.country &&
-                addressToDeliver?.name && (
+                addressToDeliver?.name &&
+                addressToDeliver?.email && (
                   <>
                     <>
                       {!!paymentSummary ? (
@@ -558,6 +569,7 @@ const CheckoutPage = () => {
                               name: addressToDeliver?.name,
                               address: addressToDeliver,
                               phone: userData?.phoneNo,
+                              email: userData?.email || addressToDeliver?.email,
                             },
                           }}
                         >
@@ -616,6 +628,7 @@ const CheckoutPage = () => {
                             name: userData?.name,
                             address: addressToDeliver,
                             phone: userData?.phoneNo,
+                            email: userData?.email || addressToDeliver?.email,
                           },
                         }}
                       >

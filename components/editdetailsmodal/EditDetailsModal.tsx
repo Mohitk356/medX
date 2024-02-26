@@ -12,6 +12,7 @@ import {
   getCountryByCode,
 } from "../../utils/constants";
 import ReactCountryFlag from "react-country-flag";
+import { validateEmail } from "../../utils/utilities";
 
 const EditDetailsModal = ({
   isOpen,
@@ -33,12 +34,12 @@ const EditDetailsModal = ({
     city: addressdetails.city || "",
     state: addressdetails.state || "",
     pincode: addressdetails.pincode || "",
+    email: addressdetails.email || "",
     country: addressdetails.country || "",
     phoneNo: addressdetails.phoneNo || "",
     ccode: addressdetails.ccode || "",
     defaultAddress: addressdetails.defaultAddress || false,
   });
-  console.log(formData);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -59,9 +60,35 @@ const EditDetailsModal = ({
       country: formData.country,
       phoneNo: formData.phoneNo,
       ccode: formData.ccode,
+      email: formData.email || "",
       defaultAddress: formData.defaultAddress,
       state: formData?.city,
     };
+
+    // validate all Form Data ==========
+    if (!formData.fname) {
+      toast.error("Enter Your Name");
+      return false;
+    } else if (formData.phoneNo.length != 10) {
+      toast.error("Enter A Valid Mobile Number");
+      return false;
+    } else if (!validateEmail(formData.email)) {
+      toast.error("Enter A Valid Email ID");
+      return false;
+    } else if (!formData.pincode) {
+      toast.error("Enter Your Pincode");
+      return false;
+    } else if (!formData.address) {
+      toast.error("Enter Your Address");
+      return false;
+    } else if (!formData.country) {
+      toast.error("Select Your Country");
+      return false;
+    } else if (!formData.city) {
+      toast.error("Enter Your City");
+      return false;
+    }
+    // end Validate =========
 
     try {
       console.log("STARTED ADDING");
@@ -203,7 +230,23 @@ const EditDetailsModal = ({
               </Listbox>
             </div>
           </div>
-
+          <div className="flex flex-col md:flex-row gap-4 md:gap-10 lg:gap-16 ">
+            <div className="w-full">
+              <h1 className="text-sm md:text-base font-normal text-neutral-400 uppercase">
+                Email ID
+              </h1>
+              <div className=" w-[100%] rounded-md">
+                <input
+                  type="email"
+                  name="email"
+                  onChange={handleChange}
+                  value={formData.email}
+                  className="w-full h-6 sm:h-8 md:h-10 pb-1 border-b-2  border-neutral-300 focus:outline-none focus:border-neutral-500 text-sm md:text-base font-semibold"
+                  required
+                />
+              </div>
+            </div>
+          </div>
           <div className="flex flex-col md:flex-row gap-4 md:gap-10 lg:gap-16 ">
             <div className="w-full ">
               {formData?.country === "United Arab Emirates" ? (

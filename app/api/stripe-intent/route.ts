@@ -3,16 +3,21 @@ import { NextResponse } from "next/server";
 export const POST = async (req: Request) => {
   const stripe = require("stripe")(process.env.NEXT_PUBLIC_STRIPE_SECRET);
   const body: any = await req.json();
-  console.log(body);
+  var paymentIntent;
+  const customer = await stripe.customers.create({
+    email: body.user.email || body.user.address.email,
+  });
 
-  const paymentIntent = await stripe.paymentIntents.create({
+  paymentIntent = await stripe.paymentIntents.create({
     currency: body?.currency,
     amount: body?.amount,
+    customer: customer.id,
     automatic_payment_methods: {
       enabled: true,
     },
-
-    description: `Pay Medx Pharmacy - (${body?.user?.phone})`,
+    description: `Pay Medx Pharmacy - (${
+      body?.user?.phone || body.user.address.ccode + body.user.address.phoneNo
+    })`,
     shipping: {
       name: body?.user?.address.name,
       address: {
@@ -24,13 +29,9 @@ export const POST = async (req: Request) => {
       },
     },
   });
-
   let response = {
     clientSecret: paymentIntent.client_secret,
   };
-
-  // const response = await fetchHomeSections();
-  console.log("Server Error =", response);
 
   return NextResponse.json(response);
 };
