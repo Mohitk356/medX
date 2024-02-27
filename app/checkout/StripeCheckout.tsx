@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import { auth, db } from "../../config/firebase-config";
 import { getUserData } from "../../utils/databaseService";
 import PlaceOrder from "./PlaceOrder";
+import axios from "axios";
 
 export default function StripeCheckout(props) {
   const { data: userData } = useQuery({
@@ -71,6 +72,7 @@ export default function StripeCheckout(props) {
         "payment.status": "failed",
         "payment.details": { ...result.error },
       });
+
       toast.error("Payment Rejected");
       router.push("/payment-failed");
       console.log(result.error.message);
@@ -83,8 +85,18 @@ export default function StripeCheckout(props) {
         //   result?.paymentIntent
         // );
       }
-
-      // let amount = parseFloat(props?.amount?.toString());
+      try {
+        await axios.post(
+          process.env.NEXT_PUBLIC_API_DOMAIN + "/api/stripe-intent/update",
+          {
+            id: result.paymentIntent.id,
+            order_id: docId,
+          }
+        );
+      } catch (error) {
+        console.log(error);
+      }
+      // let amount = parseFloat(props?.amount?.  <h1>HIII</h1>toString());
 
       // var walletPaymentObj = {
       //   uid: uid.toString(),
@@ -125,6 +137,7 @@ export default function StripeCheckout(props) {
           }}
         />
       )}
+
       <PlaceOrder
         checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry={
           props.checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry

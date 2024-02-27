@@ -27,6 +27,7 @@ const WalletStripeWrapper = ({ children, stripeData, amount }) => {
           .split(".")[0]
       );
     }
+    console.log({ stripeData: stripeData });
 
     const res = await fetch(
       process.env.NEXT_PUBLIC_API_DOMAIN + "/api/stripe-intent",
@@ -67,10 +68,7 @@ const WalletStripeWrapper = ({ children, stripeData, amount }) => {
         </Elements>
       ) : amount ? (
         <div className="">
-          <CircularProgress
-            className="!text-white"
-            size={25}
-          />
+          <CircularProgress className="!text-white" size={25} />
         </div>
       ) : (
         children

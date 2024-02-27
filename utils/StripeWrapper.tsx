@@ -3,7 +3,7 @@ import { CircularProgress } from "@mui/material";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useEffect, useState } from "react";
-import { makeLeastSignificantDigitZero } from "./utilities";
+import { makeLeastSignificantDigitZero, validateEmail } from "./utilities";
 
 const StripeWrapper = ({
   addressToDeliver,
@@ -14,9 +14,15 @@ const StripeWrapper = ({
   isCouponApplied,
 }) => {
   const [secret, setSecret] = useState("");
+  const [email, setemail] = useState(null);
   const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC);
 
   async function getClientSecret() {
+    // if secret is exist not new create
+    if (email == addressToDeliver.email) {
+      return false;
+    }
+    setemail(addressToDeliver.email);
     try {
       let amount: number;
       if (
@@ -49,11 +55,8 @@ const StripeWrapper = ({
           },
         }
       );
-
       console.log("STRIPE SECRET FOR", amount);
-
       const data = await res?.json();
-
       setSecret(data?.clientSecret);
     } catch (error) {
       console.log(error);
@@ -61,8 +64,15 @@ const StripeWrapper = ({
   }
 
   useEffect(() => {
+    // if (
+    //   validateEmail(addressToDeliver.email) &&
+    //   addressToDeliver.pincode &&
+    //   addressToDeliver.city &&
+    //   addressToDeliver.country
+    // ) {
     getClientSecret();
-  }, [paymentSummary, cashbackUsed, isCouponApplied]);
+    // }
+  }, [paymentSummary, cashbackUsed, isCouponApplied, addressToDeliver]);
 
   return (
     <div className="w-full" key={secret || ""}>
