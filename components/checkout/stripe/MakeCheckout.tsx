@@ -34,6 +34,7 @@ interface MakeCheckoutProps {
     selectedPaymentMethod: string,
     stripeData: IStripeData,
     setLoading: Function,
+    state: string,
 }
 
 function MakeCheckout({
@@ -48,7 +49,8 @@ function MakeCheckout({
     selectedPaymentMethod,
     loading,
     stripeData,
-    setLoading
+    setLoading,
+    state
 }: MakeCheckoutProps) {
 
     const stripe = useStripe();
@@ -146,7 +148,7 @@ function MakeCheckout({
     return (
         <div className="p-5 border rounded-lg">
             <div className=" flex flex-col gap-4 mt-4  ">
-                <MakeCheckoutType setSelectedPaymentMethod={setSelectedPaymentMethod} value={selectedPaymentMethod} />
+                <MakeCheckoutType allowCod={state == "Dubai"} setSelectedPaymentMethod={setSelectedPaymentMethod} value={selectedPaymentMethod} />
                 <div className="w-full border border-gray-300 rounded-md">
                     <input
                         type="text"
@@ -159,7 +161,6 @@ function MakeCheckout({
                 {selectedPaymentMethod == "cash" ? null :
                     <PaymentElement options={{ wallets: { applePay: "auto", googlePay: "never" } }} />
                 }
-                -
                 <div className="w-full flex gap-2 items-center justify-between">
                     <div className="flex gap-2">
                         <input
@@ -227,10 +228,10 @@ export default MakeCheckout;
 
 
 
-function MakeCheckoutType({ setSelectedPaymentMethod, value }: { setSelectedPaymentMethod: Function, value: string }) {
+function MakeCheckoutType({ setSelectedPaymentMethod, value, allowCod }: { setSelectedPaymentMethod: Function, value: string, allowCod: boolean }) {
     return (
         <>
-            <div className="flex items-center gap-2 p">
+            {!allowCod ? null : <div className="flex items-center gap-2 p">
                 <div
                     onClick={() => {
                         setSelectedPaymentMethod("cash")
@@ -248,7 +249,7 @@ function MakeCheckoutType({ setSelectedPaymentMethod, value }: { setSelectedPaym
                 <p className=" font-semibold text-black text-base ">
                     Cash On Delivery
                 </p>
-            </div>
+            </div>}
             <div className="  flex items-center gap-2 mt-3 mb-4">
                 <div
                     onClick={() => {

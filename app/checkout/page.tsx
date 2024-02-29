@@ -520,7 +520,7 @@ function CheckoutPage() {
               amount: Math.round(isCashBackUsed
                 ? (paymentSummary?.totalPayable - cashBackUsed) *
                 currRate
-                : paymentSummary?.totalPayable * currRate),
+                : paymentSummary?.totalPayable * currRate) * 100,
               currency: currency.toLowerCase(),
             }} >
               <MakeCheckout
@@ -534,6 +534,7 @@ function CheckoutPage() {
                     email: addressToDeliver?.email,
                   }
                 }}
+                state={addressToDeliver.state}
                 userNote={userNote}
                 checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry={checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry}
                 handleSubmit={(cod) => placeOrder(cod)}
