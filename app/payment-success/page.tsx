@@ -25,7 +25,6 @@ const PaymentSuccess = ({ searchParams }) => {
         currency: orderData?.currency,
       },
     });
-
   }
 
   function createButton() {
