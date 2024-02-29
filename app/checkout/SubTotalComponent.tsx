@@ -177,8 +177,8 @@ const SubtotalComponent = ({
                     {paymentSummary?.delivery?.deliveryCost === 0
                       ? "Free"
                       : (
-                          paymentSummary?.delivery?.deliveryCost * currRate
-                        )?.toFixed(2)}{" "}
+                        paymentSummary?.delivery?.deliveryCost * currRate
+                      )?.toFixed(2)}{" "}
                     {paymentSummary?.delivery?.deliveryCost !== 0 && currency}
                   </>
                 )}
@@ -187,11 +187,10 @@ const SubtotalComponent = ({
           )}
           {isCashbackUsed && (
             <div
-              className={`flex justify-between items-center sm:gap-3 md:gap-4 px-3 sm:px-4 md:px-5 ${
-                addressToDeliver?.country !== "United Arab Emirates" &&
+              className={`flex justify-between items-center sm:gap-3 md:gap-4 px-3 sm:px-4 md:px-5 ${addressToDeliver?.country !== "United Arab Emirates" &&
                 !overLayLoading &&
                 "mt-5"
-              }`}
+                }`}
             >
               <p className="font-semibold">Cashback used:</p>
               <p>
@@ -209,11 +208,11 @@ const SubtotalComponent = ({
               <p className=" font-semibold   text-base sm:text-lg md:text-xl">
                 {isClient && isCashbackUsed
                   ? (
-                      (paymentSummary?.totalPayable - cashbackUsed) *
-                      currRate
-                    ).toFixed(2)
-                  : (paymentSummary?.totalPayable * currRate)?.toFixed(2)}{" "}
-                {isClient && currency}{" "}
+                    Math.round((paymentSummary?.totalPayable - cashbackUsed) *
+                      currRate)
+                  ) + ".00"
+                  : Math.round((paymentSummary?.totalPayable * currRate))}{".00 "}
+                {isClient && currency}
                 {/* {(paymentSummary?.totalPayable * currRate)?.toFixed(2)} */}
               </p>
 

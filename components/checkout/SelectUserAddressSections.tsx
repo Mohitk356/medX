@@ -61,9 +61,8 @@ export default function SelectUserAddressSection(props) {
             <p className="font-medium">
               Phone:{" "}
               <span className="text-gray-500">
-                {`${props.userData?.defaultAddress?.ccode || ""} ${
-                  props.userData?.defaultAddress?.phoneNo
-                }`}
+                {`${props.userData?.defaultAddress?.ccode || ""} ${props.userData?.defaultAddress?.phoneNo
+                  }`}
               </span>
             </p>
             <p className="font-medium">
@@ -85,7 +84,7 @@ export default function SelectUserAddressSection(props) {
               Change Address
             </button>
           )}
-          <button
+          {/* <button
             className=" bg-primary text-white py-1 md:py-1 px-1 md:px-2 hover:bg-white hover:text-black cursor-pointer rounded-md border border-primary h-[30px] sm:h-[40px] md:h-[40px]"
             onClick={() => {
               props.setUserAddress(initialAddress);
@@ -93,7 +92,7 @@ export default function SelectUserAddressSection(props) {
             }}
           >
             Add New Address
-          </button>
+          </button> */}
           <button
             className=" bg-primary text-white py-1 md:py-1 px-1 md:px-2 hover:bg-white hover:text-black cursor-pointer rounded-md border border-primary h-[30px] sm:h-[40px] md:h-[40px]"
             onClick={() => {
@@ -197,10 +196,9 @@ export default function SelectUserAddressSection(props) {
                           <Listbox.Option
                             key={personIdx}
                             className={({ active }) =>
-                              `relative cursor-default select-none py-1 md:py-2 pl-3 sm:pl-5 md:pl-7 pr-2 md:pr-4 ${
-                                active
-                                  ? "bg-amber-100 text-amber-900"
-                                  : "text-gray-900"
+                              `relative cursor-default select-none py-1 md:py-2 pl-3 sm:pl-5 md:pl-7 pr-2 md:pr-4 ${active
+                                ? "bg-amber-100 text-amber-900"
+                                : "text-gray-900"
                               }`
                             }
                             value={country?.countryName}
@@ -208,14 +206,13 @@ export default function SelectUserAddressSection(props) {
                             {({ selected }) => (
                               <>
                                 <span
-                                  className={`block truncate ${
-                                    selected ? "font-medium" : "font-normal"
-                                  }`}
+                                  className={`block truncate ${selected ? "font-medium" : "font-normal"
+                                    }`}
                                 >
                                   {country?.countryName}
                                 </span>
                                 {country?.countryName ===
-                                editModalState?.country ? (
+                                  editModalState?.country ? (
                                   <span className="absolute inset-y-0 right-5 flex items-center pr-3 text-amber-600">
                                     <FlatIcon className="flaticon-check text-primary" />
                                   </span>
@@ -263,10 +260,9 @@ export default function SelectUserAddressSection(props) {
                           <Listbox.Option
                             key={personIdx}
                             className={({ active }) =>
-                              `relative cursor-default select-none py-1 md:py-2 pl-3 sm:pl-5 md:pl-7 pr-2 md:pr-4 ${
-                                active
-                                  ? "bg-amber-100 text-amber-900"
-                                  : "text-gray-900"
+                              `relative cursor-default select-none py-1 md:py-2 pl-3 sm:pl-5 md:pl-7 pr-2 md:pr-4 ${active
+                                ? "bg-amber-100 text-amber-900"
+                                : "text-gray-900"
                               }`
                             }
                             value={state}
@@ -274,9 +270,8 @@ export default function SelectUserAddressSection(props) {
                             {({ selected }) => (
                               <>
                                 <span
-                                  className={`block truncate ${
-                                    selected ? "font-medium" : "font-normal"
-                                  }`}
+                                  className={`block truncate ${selected ? "font-medium" : "font-normal"
+                                    }`}
                                 >
                                   {state}
                                 </span>

@@ -141,7 +141,7 @@ const Navmobile = ({
                       {allowedCountries &&
                         allowedCountries.map((val) => {
                           return (
-                            <div className="px-1 py-1 " key={val}>
+                            <div className="px-1 py-1 " key={val + "-country"}>
                               <Menu.Item>
                                 {({ active }) => (
                                   <button

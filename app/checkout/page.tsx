@@ -1,25 +1,10 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { addDoc, collection, doc } from "firebase/firestore";
-import { httpsCallable } from "firebase/functions";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
-import CheckoutOrders from "../../components/checkout/CheckoutOrders";
-import CouponSection from "../../components/checkout/CouponSection";
-import NewAddress from "../../components/checkout/newAddress";
+import React, { useEffect, useState } from "react";
 import CheckoutNav from "../../components/checkoutnav/CheckoutNav";
 import CheckoutProgress from "../../components/checkoutnav/CheckoutProgress";
-import { auth, db, functions } from "../../config/firebase-config";
-import { usePrevious } from "../../hooks/usePrevious";
-import cards from "../../images/cards.png";
-import { useAppSelector } from "../../redux/hooks";
-import { reset } from "../../redux/slices/cartSlice";
-import StripeWrapper from "../../utils/StripeWrapper";
-import { getGstAppilicableInfo } from "../../utils/cartUtilities/cartUtility";
+import NewAddress from "../../components/checkout/newAddress";
+import { useQuery } from "@tanstack/react-query";
 import {
   addAddressToUser,
   getCountries,
@@ -28,15 +13,30 @@ import {
   updateDefaultAddress,
 } from "../../utils/databaseService";
 import {
+  checkIfProductQuanityIsAvailable,
   getCountry,
   initialAddress,
   validateEmail,
 } from "../../utils/utilities";
-import Paymentmethods from "./Paymentmethods";
-import PlaceOrder from "./PlaceOrder";
+import { useAppSelector } from "../../redux/hooks";
+import { toast } from "react-toastify";
 import SubtotalComponent from "./SubTotalComponent";
-
-const CheckoutPage = () => {
+import CouponSection from "../../components/checkout/CouponSection";
+import CheckoutOrders from "../../components/checkout/CheckoutOrders";
+import { httpsCallable } from "firebase/functions";
+import { auth, db, functions } from "../../config/firebase-config";
+import { getGstAppilicableInfo } from "../../utils/cartUtilities/cartUtility";
+import { useRouter } from "next/navigation";
+import { usePrevious } from "../../hooks/usePrevious";
+import MakeCheckout from "../../components/checkout/stripe/MakeCheckout";
+import { addDoc, collection, doc } from "firebase/firestore";
+import { useDispatch } from "react-redux";
+import { reset } from "../../redux/slices/cartSlice";
+import { loadStripe } from "@stripe/stripe-js";
+import axios from "axios";
+import { Elements } from "@stripe/react-stripe-js";
+import { StripeElementsOptions } from "@stripe/stripe-js";
+function CheckoutPage() {
   const { data: allowedCountries } = useQuery({
     queryKey: ["countries"],
     queryFn: () => getCountries(),
@@ -52,16 +52,17 @@ const CheckoutPage = () => {
     queryFn: () => getWalletInfo(),
     keepPreviousData: true,
   });
+  const { currRate, currency } = useAppSelector(
+    (state: any) => state.appReducer
+  );
+  const cart = useAppSelector((state: any) => state.cartReducer.cart);
+  const router = useRouter();
+  const dispatch = useDispatch();
 
   const [isCashBackUsed, setIsCashbackUsed] = useState(false);
   const [cashBackUsed, setCashBackused] = useState(0);
   const [saveAddress, setSaveAddress] = useState(false);
   const [makeDefault, setMakeDefault] = useState(false);
-
-  const { currRate, currency } = useAppSelector(
-    (state: any) => state.appReducer
-  );
-  const cart = useAppSelector((state: any) => state.cartReducer.cart);
 
   const [loading, setLoading] = useState(false);
   const [isTermsAgreed, setIsTermsAgreed] = useState(false);
@@ -74,6 +75,10 @@ const CheckoutPage = () => {
   const [userName, setName]: any = useState({ first: "", last: "" });
   const [paymentSummary, setPaymentSummary] = useState(null);
 
+  const [isCouponApplied, setIsCouponApplied] = useState(false);
+  const [appliedCouponAmount, setAppliedCouponAmount] = useState(null);
+
+
   const [userAddress, setUserAddress] = useState(
     (userData && userData?.defaultAddress) || initialAddress
   );
@@ -81,18 +86,20 @@ const CheckoutPage = () => {
   const [addressToDeliver, setAddressToDeliver] = useState(
     (userData && userData?.defaultAddress) || initialAddress
   );
+  const prevValue = usePrevious(addressToDeliver?.country || "");
 
   const [isNewAddress, setIsNewAddress] = useState(
     !(userData && userData?.defaultAddress)
   );
 
-  const [isCouponApplied, setIsCouponApplied] = useState(false);
-  const [appliedCouponAmount, setAppliedCouponAmount] = useState(null);
 
-  const prevValue = usePrevious(addressToDeliver?.country || "");
+  console.log(addressToDeliver);
 
-  const dispatch = useDispatch();
-  const router = useRouter();
+  const handleChange = (name, value) => {
+    setAddressToDeliver((val) => {
+      return { ...val, [name]: value };
+    });
+  };
 
   async function getPaymentSummary() {
     if (!cart || (cart && cart.length === 0)) {
@@ -131,42 +138,155 @@ const CheckoutPage = () => {
     console.log("Summery ", summaryData);
   }
 
-  const handleChange = (name, value) => {
-    setAddressToDeliver((val) => {
-      return { ...val, [name]: value };
-    });
-  };
+  async function updatePaymentSummaryWithOverLayLoading() {
+    setOverLayLoading(true);
 
-  function getConditionForCashPaymentBackendFunction() {
-    if (!isCashBackUsed) {
-      return false;
+    if (!cart || (cart && cart.length === 0)) {
+      router.push("/cart");
+      setOverLayLoading(false);
+      return;
     }
+    const getPaymentSummaryDetails = httpsCallable(
+      functions,
+      "orders-getOrderPaymentDetails"
+    );
 
-    if (parseFloat(paymentSummary?.totalPayable) < walletInfo.minOrderAmnt) {
-      const totalAmount = parseFloat(paymentSummary?.totalPayable);
-      const wallet = userData.wallet.balance;
+    const isGst = await getGstAppilicableInfo();
+    let data = {
+      address: {
+        ...addressToDeliver,
+        city: addressToDeliver?.state,
+        country: addressToDeliver?.country?.trim(),
+      },
+      products: cart,
+      isGstApplicable: isGst,
+      customDeliverySettings: null,
+    };
+    const res: any = await getPaymentSummaryDetails(data);
 
-      if (totalAmount - wallet <= 0) {
-        return true;
-      }
-      return false;
-    } else {
-      const totalAmount = parseFloat(paymentSummary?.totalPayable);
-      const cashBack = userData?.wallet?.cashback;
-      const usableCashback =
-        parseFloat(cashBack) > walletInfo?.maxWalletAmntPerOrder
-          ? walletInfo?.maxWalletAmntPerOrder
-          : parseFloat(cashBack);
-      const wallet = userData?.wallet?.balance;
-
-      if (totalAmount - usableCashback - parseFloat(wallet) <= 0) {
-        return true;
-      }
-      return false;
+    if (res?.data?.delivery?.country !== addressToDeliver?.country?.trim()) {
+      return await updatePaymentSummaryWithOverLayLoading();
     }
+    setIsCouponApplied(false);
+    setAppliedCouponAmount(null);
+    setPaymentSummary(res.data);
+    setOverLayLoading(false);
   }
 
-  async function placeOrder({ isCod = true }) {
+
+  // on handel submitt data
+
+  function handleAddressSubmit() {
+    const {
+      address,
+      city,
+      lat,
+      lng,
+      name,
+      phoneNo,
+      pincode,
+      state,
+      country,
+      stateCode,
+      email,
+    } = addressToDeliver;
+    console.log(addressToDeliver);
+
+    // if (!address || !city || !phoneNo || !state || !name) {
+    //   console.log("ENTER DETAILS CORRECTLY", userAddress);
+    //   return;
+    // }
+
+    // validate all data
+    if (!name) {
+      toast.error("Enter Your Name");
+      return false;
+    } else if (!email) {
+      toast.error("Enter Your Email ID");
+      return false;
+    } else if (!validateEmail(email)) {
+      toast.error("Enter A Valid Email ID");
+      return false;
+    } else if (phoneNo.length != 10) {
+      toast.error("Enter A Valid Mobile Number");
+      return false;
+    } else if (!country) {
+      toast.error("Enter Your country Name");
+      return false;
+    } else if (!city) {
+      toast.error("Enter Your City Name");
+      return false;
+    } else if (!address) {
+      toast.error("Enter Your Address");
+      return false;
+    } else if (!pincode) {
+      toast.error("Enter Your Pincode");
+      return false;
+    }
+
+    if (makeDefaultAddress) {
+      updateDefaultAddress({
+        ...userAddress,
+        country: getCountry(allowedCountries, currency)?.countryName,
+      });
+    }
+
+    addAddressToUser({
+      ...userAddress,
+      country: getCountry(allowedCountries, currency)?.countryName,
+    });
+    setAddressToDeliver({
+      ...userAddress,
+      country: getCountry(allowedCountries, currency)?.countryName,
+    });
+  }
+
+
+
+  useEffect(() => {
+    getPaymentSummary();
+  }, []);
+
+  useEffect(() => {
+    if (
+      prevValue === "" ||
+      addressToDeliver?.country === "United Arab Emirates" ||
+      (prevValue === "United Arab Emirates" &&
+        addressToDeliver?.country !== "United Arab Emirates")
+    )
+      updatePaymentSummaryWithOverLayLoading();
+  }, [addressToDeliver?.country]);
+
+  useEffect(() => {
+    if (addressToDeliver?.country === "United Arab Emirates") {
+      updatePaymentSummaryWithOverLayLoading();
+    }
+  }, [addressToDeliver?.state]);
+
+
+
+  function checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry() {
+    let response = false;
+    if (paymentSummary) {
+      for (let index = 0; index < paymentSummary?.products.length; index++) {
+        const element = paymentSummary?.products[index];
+        if (
+          element?.restrictedCountries &&
+          element?.restrictedCountries?.includes(addressToDeliver?.country)
+        ) {
+          response = true;
+          break;
+        }
+      }
+    }
+    return response;
+  }
+
+
+
+  async function placeOrder(isCod: boolean) {
+    // const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC);
+
     if (!isTermsAgreed) {
       toast.error(
         "Please Agree to Terms & Conditions before placing your order"
@@ -197,7 +317,7 @@ const CheckoutPage = () => {
     if (
       addressToDeliver?.email &&
       /^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/.test(addressToDeliver?.email) ===
-        false
+      false
     ) {
       toast.error("Enter valid email.");
       return;
@@ -254,8 +374,8 @@ const CheckoutPage = () => {
       msgId: auth.currentUser?.uid
         ? doc(collection(db, "chats", auth.currentUser?.uid, "messages")).id
         : sessionStorage.getItem("guestLogin")
-        ? null
-        : "",
+          ? null
+          : "",
       userName: userData?.name || addressToDeliver?.name,
       region: "",
     };
@@ -286,12 +406,13 @@ const CheckoutPage = () => {
       await addAddressToUser({ ...addressToDeliver, createdAt: new Date() });
     }
 
-    orderId = (await addDoc(collection(db, "orders"), orderObj)).id;
 
-    dispatch(reset());
+
+    orderId = (await addDoc(collection(db, "orders"), orderObj)).id;
     if (isCod) {
       toast.success("Order Placed Successfully");
       setLoading(false);
+      dispatch(reset());
 
       // try {
       //   if (selectedPaymentMethod === "cash") {
@@ -320,154 +441,22 @@ const CheckoutPage = () => {
       // } catch (error) {
       //   console.log("ERROR", error);
       // }
-
       router.push(`/payment-success/?orderId=${orderId}&mode=cash`);
-    } else {
       return orderId;
-    }
-  }
-
-  async function updatePaymentSummaryWithOverLayLoading() {
-    setOverLayLoading(true);
-
-    if (!cart || (cart && cart.length === 0)) {
-      router.push("/cart");
-      setOverLayLoading(false);
-      return;
-    }
-    const getPaymentSummaryDetails = httpsCallable(
-      functions,
-      "orders-getOrderPaymentDetails"
-    );
-
-    const isGst = await getGstAppilicableInfo();
-    let data = {
-      address: {
-        ...addressToDeliver,
-        city: addressToDeliver?.state,
-        country: addressToDeliver?.country?.trim(),
-      },
-      products: cart,
-      isGstApplicable: isGst,
-      customDeliverySettings: null,
-    };
-    const res: any = await getPaymentSummaryDetails(data);
-
-    if (res?.data?.delivery?.country !== addressToDeliver?.country?.trim()) {
-      return await updatePaymentSummaryWithOverLayLoading();
-    }
-    setIsCouponApplied(false);
-    setAppliedCouponAmount(null);
-    setPaymentSummary(res.data);
-    setOverLayLoading(false);
-  }
-
-  function handleAddressSubmit() {
-    const {
-      address,
-      city,
-      lat,
-      lng,
-      name,
-      phoneNo,
-      pincode,
-      state,
-      stateCode,
-    } = userAddress;
-
-    if (!address || !city || !phoneNo || !state || !name) {
-      console.log("ENTER DETAILS CORRECTLY", userAddress);
-
-      return;
-    }
-
-    if (makeDefaultAddress) {
-      updateDefaultAddress({
-        ...userAddress,
-        country: getCountry(allowedCountries, currency)?.countryName,
-      });
-    }
-    addAddressToUser({
-      ...userAddress,
-      country: getCountry(allowedCountries, currency)?.countryName,
-    });
-    setAddressToDeliver({
-      ...userAddress,
-      country: getCountry(allowedCountries, currency)?.countryName,
-    });
-  }
-
-  useEffect(() => {
-    getPaymentSummary();
-  }, []);
-
-  useEffect(() => {
-    if (
-      prevValue === "" ||
-      addressToDeliver?.country === "United Arab Emirates" ||
-      (prevValue === "United Arab Emirates" &&
-        addressToDeliver?.country !== "United Arab Emirates")
-    )
-      updatePaymentSummaryWithOverLayLoading();
-  }, [addressToDeliver?.country]);
-
-  useEffect(() => {
-    if (addressToDeliver?.country === "United Arab Emirates") {
-      updatePaymentSummaryWithOverLayLoading();
-    }
-  }, [addressToDeliver?.state]);
-
-  async function getUsedCashback() {
-    if (isCashBackUsed && walletInfo) {
-      let usableCashback =
-        userData?.wallet?.cashback < walletInfo?.maxWalletAmntPerOrder
-          ? userData?.wallet?.cashback > paymentSummary?.totalPayable
-            ? paymentSummary?.totalPayable
-            : userData?.wallet?.cashback
-          : walletInfo?.maxWalletAmntPerOrder > paymentSummary?.totalPayable
-          ? paymentSummary?.totalPayable
-          : walletInfo?.maxWalletAmntPerOrder;
-      return setCashBackused(usableCashback);
     } else {
-      setCashBackused(0);
+      setLoading(false);
+
+      return orderId;
+
     }
   }
+  const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC);
 
-  useEffect(() => {
-    getUsedCashback();
-  }, [isCashBackUsed, paymentSummary]);
-
-  function checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry() {
-    let response = false;
-    if (paymentSummary) {
-      for (let index = 0; index < paymentSummary?.products.length; index++) {
-        const element = paymentSummary?.products[index];
-        if (
-          element?.restrictedCountries &&
-          element?.restrictedCountries?.includes(addressToDeliver?.country)
-        ) {
-          response = true;
-          break;
-        }
-      }
-    }
-
-    return response;
-  }
-
-  function checkIfCashbackCoversTheTotalAmount() {
-    if (cashBackUsed >= paymentSummary?.paymentSummary?.totalPayable) {
-      return true;
-    }
-    return false;
-  }
-  console.log(userData);
 
   return (
     <div className="px-body ">
       <CheckoutNav />
       <CheckoutProgress />
-
       <div className="w-full flex md:flex-row flex-col gap-4 sm:gap-8 md:gap-16  my-6 sm:my-8 md:my-10 ">
         <div className="w-full md:w-[55%]  flex flex-col ">
           <div className="flex justify-between items-center ">
@@ -490,7 +479,6 @@ const CheckoutPage = () => {
             handleChange={handleChange}
           />
         </div>
-
         <div className="w-full md:w-[45%]  flex flex-col gap-3 sm:gap-4 md:gap-5 ">
           <div className="flex justify-between items-center ">
             <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-black ">
@@ -524,171 +512,45 @@ const CheckoutPage = () => {
             isCouponApplied={isCouponApplied}
             appliedCouponAmount={appliedCouponAmount}
           />
-
-          {isCashBackUsed && cashBackUsed === paymentSummary?.totalPayable ? (
-            <>
-              <PlaceOrder
-                checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry={
-                  checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry
-                }
-                setSelectedPaymentMethod={setSelectedPaymentMethod}
+          {/* this is check out Box  */}
+          {(paymentSummary && addressToDeliver && currency) ?
+            <Elements stripe={stripePromise} options={{
+              mode: 'payment',
+              amount: Math.round(isCashBackUsed
+                ? (paymentSummary?.totalPayable - cashBackUsed) *
+                currRate
+                : paymentSummary?.totalPayable * currRate),
+              currency: currency.toLowerCase(),
+            }} >
+              <MakeCheckout
+                stripeData={{
+                  amount: Math.round(isCashBackUsed ? (paymentSummary?.totalPayable - cashBackUsed) * currRate : paymentSummary?.totalPayable * currRate),
+                  currency: currency.toLowerCase(),
+                  user: {
+                    address: addressToDeliver,
+                    name: addressToDeliver?.name,
+                    phone: addressToDeliver?.phoneNo,
+                    email: addressToDeliver?.email,
+                  }
+                }}
                 userNote={userNote}
-                setUserNote={setUserNote}
-                loading={loading}
-                isCashBackUsed={isCashBackUsed}
-                handleSubmit={placeOrder}
+                checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry={checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry}
+                handleSubmit={(cod) => placeOrder(cod)}
                 isTermsAgreed={isTermsAgreed}
+                selectedPaymentMethod={selectedPaymentMethod}
+                loading={loading}
+                setLoading={setLoading}
                 setIsTermsAgreed={setIsTermsAgreed}
+                setUserNote={setUserNote}
+                isCashBackUsed={isCashBackUsed}
+                setSelectedPaymentMethod={setSelectedPaymentMethod}
               />
-            </>
-          ) : (
-            <>
-              {sessionStorage.getItem("guestLogin") &&
-                !auth.currentUser?.uid &&
-                addressToDeliver?.address &&
-                addressToDeliver?.city &&
-                addressToDeliver?.state &&
-                addressToDeliver?.country &&
-                addressToDeliver?.name &&
-                addressToDeliver?.email && (
-                  <>
-                    <>
-                      {!!paymentSummary ? (
-                        <StripeWrapper
-                          isCouponApplied={isCouponApplied}
-                          cashbackUsed={cashBackUsed}
-                          paymentSummary={paymentSummary}
-                          addressToDeliver={addressToDeliver}
-                          stripeData={{
-                            currency: currency,
-                            amount: isCashBackUsed
-                              ? (paymentSummary?.totalPayable - cashBackUsed) *
-                                currRate
-                              : paymentSummary?.totalPayable * currRate,
-                            user: {
-                              name: addressToDeliver?.name,
-                              address: addressToDeliver,
-                              phone: userData?.phoneNo,
-                              email: userData?.email || addressToDeliver?.email,
-                            },
-                          }}
-                        >
-                          <Paymentmethods
-                            checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry={
-                              checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry
-                            }
-                            userNote={userNote}
-                            setUserNote={setUserNote}
-                            setLoading={setLoading}
-                            loading={loading}
-                            isTermsAgreed={isTermsAgreed}
-                            setIsTermsAgreed={setIsTermsAgreed}
-                            paymentSummary={paymentSummary}
-                            placeOrder={placeOrder}
-                            updatePaymentMethod={setSelectedPaymentMethod}
-                            addressToDeliver={addressToDeliver}
-                          />
-                        </StripeWrapper>
-                      ) : (
-                        <Paymentmethods
-                          checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry={
-                            checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry
-                          }
-                          userNote={userNote}
-                          setUserNote={setUserNote}
-                          loading={loading}
-                          setLoading={setLoading}
-                          isTermsAgreed={isTermsAgreed}
-                          setIsTermsAgreed={setIsTermsAgreed}
-                          paymentSummary={paymentSummary}
-                          placeOrder={placeOrder}
-                          updatePaymentMethod={setSelectedPaymentMethod}
-                          addressToDeliver={addressToDeliver}
-                        />
-                      )}
-                    </>
-                  </>
-                )}
-              {!sessionStorage.getItem("guestLogin") &&
-                auth.currentUser?.uid && (
-                  <>
-                    {!!paymentSummary ? (
-                      <StripeWrapper
-                        addressToDeliver={addressToDeliver}
-                        isCouponApplied={isCouponApplied}
-                        cashbackUsed={cashBackUsed}
-                        paymentSummary={paymentSummary}
-                        stripeData={{
-                          currency: currency,
-                          amount: isCashBackUsed
-                            ? (paymentSummary?.totalPayable - cashBackUsed) *
-                              currRate
-                            : paymentSummary?.totalPayable * currRate,
-                          user: {
-                            name: userData?.name,
-                            address: addressToDeliver,
-                            phone: userData?.phoneNo,
-                            email: userData?.email || addressToDeliver?.email,
-                          },
-                        }}
-                      >
-                        <Paymentmethods
-                          checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry={
-                            checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry
-                          }
-                          userNote={userNote}
-                          setUserNote={setUserNote}
-                          setLoading={setLoading}
-                          loading={loading}
-                          isTermsAgreed={isTermsAgreed}
-                          setIsTermsAgreed={setIsTermsAgreed}
-                          paymentSummary={paymentSummary}
-                          placeOrder={placeOrder}
-                          updatePaymentMethod={setSelectedPaymentMethod}
-                          addressToDeliver={addressToDeliver}
-                        />
-                      </StripeWrapper>
-                    ) : (
-                      <Paymentmethods
-                        checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry={
-                          checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry
-                        }
-                        userNote={userNote}
-                        setUserNote={setUserNote}
-                        loading={loading}
-                        setLoading={setLoading}
-                        isTermsAgreed={isTermsAgreed}
-                        setIsTermsAgreed={setIsTermsAgreed}
-                        paymentSummary={paymentSummary}
-                        placeOrder={placeOrder}
-                        updatePaymentMethod={setSelectedPaymentMethod}
-                        addressToDeliver={addressToDeliver}
-                      />
-                    )}
-                  </>
-                )}
-            </>
-          )}
-
-          <p className="text-xs md:text-sm ">
-            Your personal data will be used to process your order, support your
-            experience throughout this website, and for other purposes described
-            in our privacy policy.
-          </p>
-
-          <div className="w-full  ">
-            <Image
-              src={cards}
-              alt="payment cards"
-              height={1000}
-              width={1000} // style={{ aspectRatio: "auto", width: "100px", height: "auto" }}
-              className="w-full h-auto"
-            />
-          </div>
+            </Elements>
+            : null}
         </div>
       </div>
     </div>
   );
-};
+}
 
 export default CheckoutPage;
