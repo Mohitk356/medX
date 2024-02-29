@@ -36,6 +36,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
 import { Elements } from "@stripe/react-stripe-js";
 import { StripeElementsOptions } from "@stripe/stripe-js";
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC);
 function CheckoutPage() {
   const { data: allowedCountries } = useQuery({
     queryKey: ["countries"],
@@ -450,7 +451,7 @@ function CheckoutPage() {
 
     }
   }
-  const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC);
+
 
 
   return (
