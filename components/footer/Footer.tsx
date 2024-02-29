@@ -154,7 +154,10 @@ const Footer = () => {
         <div className="grid xl:grid-cols-5 lg:grid-cols-4 grid-cols-1 sm:grid-cols-2 gap-5 ">
           {dummyData2.map((item: any, idx: number) => {
             return (
-              <div className="flex items-center gap-x-2" key={item?.heading}>
+              <div
+                className="flex items-center gap-x-2"
+                key={item?.heading + idx}
+              >
                 <div className="h-10 w-14 ">
                   <Image
                     src={item.image}
@@ -309,7 +312,7 @@ const Footer = () => {
                 return (
                   <div
                     className="w-full lg:w-1/3 flex flex-col gap-4 md:gap-7  "
-                    key={item?.heading}
+                    key={idx + item?.heading}
                   >
                     <div className=" relative font-semibold text-base md:text-lg w-fit ">
                       {item.heading}
@@ -339,7 +342,7 @@ const Footer = () => {
                             return (
                               <div
                                 className="text-sm md:text-base "
-                                key={index * Math.random()}
+                                key={index * Math.random() + "footer-key"}
                               >
                                 {link.name}
                               </div>
@@ -361,7 +364,10 @@ const Footer = () => {
                   <div className="flex flex-col gap-2 sm:gap-3 md:gap-4">
                     {item.subLinks.map((item: any, idx: number) => {
                       return (
-                        <Link key={item?.href} href={item?.href || "/#"}>
+                        <Link
+                          key={item?.href + "-FooterLink"}
+                          href={item?.href || "/#"}
+                        >
                           <div className="text-sm md:text-base ">
                             {item.name}
                           </div>
@@ -381,7 +387,7 @@ const Footer = () => {
             <div className="flex gap-3">
               {images.map((item: any, idx: number) => {
                 return (
-                  <div key={item?.image || idx}>
+                  <div key={item?.image || idx + "Image-Key"}>
                     <Image
                       src={item.image}
                       alt="image"

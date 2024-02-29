@@ -37,7 +37,7 @@ const CategoriesBar: FC<Props> = ({
     <div className="absolute left-0 w-[90vw] bg-white shadow-lg rounded-b-lg min-w-[100%]  mx-auto   z-30">
       <div className="flex justify-between">
         <div className="flex-1 bg-white py-4 rounded-bl-lg px-2 max-h-[400px] flex flex-col flex-wrap">
-          {categories[hoveredCategory]?.subcategories?.map((subCat) => {
+          {categories[hoveredCategory]?.subcategories?.map((subCat, i) => {
             return (
               // <div className="flex flex-col flex-wrap max-h-[400px] mt-2">
               <>
@@ -48,7 +48,7 @@ const CategoriesBar: FC<Props> = ({
                       : `/shop/category/${categories[hoveredCategory]?.category?.slug?.name}/${subCat?.slug?.name}`
                   }
                   className={`${subCat?.isSubcategories ? "" : "mb-1"}`}
-                  key={subCat?.id}
+                  key={subCat?.id + "-cat-link-" + i}
                   onClick={() => setHoveredCategory(null)}
                 >
                   <div
@@ -66,7 +66,7 @@ const CategoriesBar: FC<Props> = ({
                     return (
                       <Link
                         href={`/shop/category/${categories[hoveredCategory]?.category?.slug?.name}/${subCat?.slug?.name}/${subSubCat?.slug?.name}`}
-                        key={subSubCat?.id}
+                        key={subSubCat?.id + "-shopcat-" + index}
                         className={`${
                           index + 1 === subCat?.subSubCategories?.length &&
                           "mb-2"

@@ -128,7 +128,7 @@ const NavbarClient = ({ cookie }: any) => {
         await axios.post(`/api/logout`);
         await queryClient.setQueryData(["userData"], null);
         toast.success("Logged out");
-        router.push("/");
+        window.location.replace("/")
       })
       .catch((error) => {
         // An error happened.
@@ -172,7 +172,7 @@ const NavbarClient = ({ cookie }: any) => {
     return (
       <div
         className="flex items-center gap-2 cursor-pointer"
-        onClick={isLoginOpen ? () => {} : handleLoginClick}
+        onClick={isLoginOpen ? () => { } : handleLoginClick}
       >
         <FlatIcon icon={"flaticon-user text-xl"} />
         {iconmatches ? "" : <h3>Login</h3>}
@@ -214,9 +214,8 @@ const NavbarClient = ({ cookie }: any) => {
         <div className="hidden md:block bg-black text-white py-1.5 lg:py-3 text-sm font-semibold w-full px-1.5 lg:px-2.5">
           <div className="flex items-center   w-[93%] mx-auto justify-between gap-1">
             <a
-              href={`tel:${
-                storeData && storeData?.storePhone?.split("+91")[1]
-              }`}
+              href={`tel:${storeData && storeData?.storePhone?.split("+91")[1]
+                }`}
             >
               <div className="flex items-center gap-2">
                 <FlatIcon className="flaticon-support text-lg md:text-xl" />
@@ -276,11 +275,10 @@ const NavbarClient = ({ cookie }: any) => {
                                           setCurrency(val?.currencyCode)
                                         );
                                       }}
-                                      className={`${
-                                        active
+                                      className={`${active
                                           ? "bg-primary text-white"
                                           : "text-gray-900"
-                                      } group flex w-full items-center rounded-md px-1 py-1 lg:px-2 lg:py-2 text-sm`}
+                                        } group flex w-full items-center rounded-md px-1 py-1 lg:px-2 lg:py-2 text-sm`}
                                     >
                                       <div className="flex w-full gap-2 items-center">
                                         <ReactCountryFlag
@@ -311,9 +309,9 @@ const NavbarClient = ({ cookie }: any) => {
               <div className="flex items-center w-1/3 ">
                 <div
                   className="flex items-center gap-1 cursor-pointer"
-                  // onClick={() => {
-                  //   setIsPrescriptionUpload(true);
-                  // }}
+                // onClick={() => {
+                //   setIsPrescriptionUpload(true);
+                // }}
                 >
                   <Link
                     href={"/upload-prescription"}
@@ -569,9 +567,8 @@ function UserDropDown(userData: any, handleLogout: any): React.ReactNode {
                 {({ active }) => (
                   <Link href={"/profile"}>
                     <button
-                      className={`${
-                        active ? "bg-primary text-white" : "text-gray-900"
-                      } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                      className={`${active ? "bg-primary text-white" : "text-gray-900"
+                        } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
                     >
                       {/* {active ? "active" : "notActive"} */}
                       Profile
@@ -583,9 +580,8 @@ function UserDropDown(userData: any, handleLogout: any): React.ReactNode {
                 {({ active }) => (
                   <button
                     onClick={handleLogout}
-                    className={`${
-                      active ? "bg-primary text-white" : "text-gray-900"
-                    } group flex w-full items-center rounded-md px-1 py-1 text-sm`}
+                    className={`${active ? "bg-primary text-white" : "text-gray-900"
+                      } group flex w-full items-center rounded-md px-1 py-1 text-sm`}
                   >
                     {/* {active ? "active" : "notActive"} */}
                     Logout
@@ -648,9 +644,8 @@ function GuestDropDown(
                       sessionStorage.removeItem("guestLogin");
                       setToggleGuestLogin((val: number) => val + 1);
                     }}
-                    className={`${
-                      active ? "bg-primary text-white" : "text-gray-900"
-                    } group flex w-full items-center rounded-md px-1 py-1 text-sm`}
+                    className={`${active ? "bg-primary text-white" : "text-gray-900"
+                      } group flex w-full items-center rounded-md px-1 py-1 text-sm`}
                   >
                     {/* {active ? "active" : "notActive"} */}
                     Logout

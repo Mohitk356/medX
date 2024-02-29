@@ -65,7 +65,7 @@ const ProfileClient = ({ cookie }) => {
         queryClient.invalidateQueries({ queryKey: ["userData"] });
         queryClient.refetchQueries({ queryKey: ["userData"] });
         // Sign-out successful.
-        router.replace("/");
+        window.location.replace("/")
       })
       .catch((error) => {
         // An error happened.
@@ -207,9 +207,8 @@ const ProfileClient = ({ cookie }) => {
                 onClick={() => setActiveTab("myOrders")}
               >
                 <p
-                  className={` text-sm sm:text-base md:text-lg  tracking-tight font-semibold ${
-                    activeTab === "myOrders" ? "text-red-600" : "text-black"
-                  }`}
+                  className={` text-sm sm:text-base md:text-lg  tracking-tight font-semibold ${activeTab === "myOrders" ? "text-red-600" : "text-black"
+                    }`}
                 >
                   My Orders{" "}
                   {/* <span>({isClient && userOrders && userOrders.length})</span> */}
@@ -224,9 +223,8 @@ const ProfileClient = ({ cookie }) => {
                 onClick={() => setActiveTab("myAddresses")}
               >
                 <p
-                  className={` text-sm sm:text-base md:text-lg  tracking-tight font-semibold ${
-                    activeTab === "myAddresses" ? "text-red-600" : "text-black"
-                  }`}
+                  className={` text-sm sm:text-base md:text-lg  tracking-tight font-semibold ${activeTab === "myAddresses" ? "text-red-600" : "text-black"
+                    }`}
                 >
                   My Addresses
                 </p>
@@ -258,9 +256,8 @@ const ProfileClient = ({ cookie }) => {
                 onClick={() => setActiveTab("personalInfo")}
               >
                 <p
-                  className={` text-sm sm:text-base md:text-lg  tracking-tight font-semibold ${
-                    activeTab === "personalInfo" ? "text-red-600" : "text-black"
-                  }`}
+                  className={` text-sm sm:text-base md:text-lg  tracking-tight font-semibold ${activeTab === "personalInfo" ? "text-red-600" : "text-black"
+                    }`}
                 >
                   Personal Info
                 </p>
@@ -299,7 +296,7 @@ const ProfileClient = ({ cookie }) => {
           </div>
         </div>
         {isProfileUploading && (
-          <Modal setOpen={() => {}} isOpen={isProfileUploading}>
+          <Modal setOpen={() => { }} isOpen={isProfileUploading}>
             <div className="flex flex-col gap-3 items-center">
               <CircularProgress className="!text-primary" size={40} />
               <p className="text-white font-medium text-xl">

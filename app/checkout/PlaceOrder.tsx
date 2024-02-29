@@ -62,11 +62,10 @@ export default function PlaceOrder({
           }
           handleSubmit({ isCod: true });
         }}
-        className={`w-full text-white py-1 md:py-2 px-1 md:px-2 hover:bg-[#df191e]  cursor-pointer  border border-[#ed1c24] ${
-          checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry()
-            ? "bg-[#ed1c23b5] hover:bg-[#ed1c23b5] cursor-not-allowed"
-            : "bg-[#ed1c24]"
-        } rounded-md text-center text-base sm:text-lg md:text-xl font-semibold`}
+        className={`w-full text-white py-1 md:py-2 px-1 md:px-2 hover:bg-[#df191e]  cursor-pointer  border border-[#ed1c24] ${checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry()
+          ? "bg-[#ed1c23b5] hover:bg-[#ed1c23b5] cursor-not-allowed"
+          : "bg-[#ed1c24]"
+          } rounded-md text-center text-base sm:text-lg md:text-xl font-semibold`}
       >
         {loading ? (
           <CircularProgress className="!text-white" size={25} />

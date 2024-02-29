@@ -194,3 +194,8 @@ export function getCountryByCode(countryCode) {
   const country = allCountries.find((c) => c.code === countryCode);
   return country || null; // return null if the country code is not found
 }
+
+export function getCountryByName(countryName) {
+  const country = allCountries.find((c) => c.name === countryName);
+  return country || null; // return null if the country code is not found
+}

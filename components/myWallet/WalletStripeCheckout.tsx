@@ -81,12 +81,12 @@ export default function WalletStripeCheckout(props) {
   return (
     <div className="w-full   flex-1 bg-white px-8 py-8 rounded-md">
       <form onSubmit={handleSubmit} id="payment">
-        <PaymentElement
+        {/* <PaymentElement
           options={{}}
           onReady={(ele) => {
             // ele.
           }}
-        />
+        /> */}
         <button
           className=" mt-3 px-3 py-2 bg-black text-white rounded-md flex justify-center items-center"
           onClick={loading ? null : handleSubmit}

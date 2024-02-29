@@ -26,12 +26,14 @@ export default function StripeCheckout(props) {
   const [isElementUpdating, setIsElementUpdating] = useState(false);
 
   const handleSubmit = async (event) => {
+
     if (!props.isTermsAgreed) {
       toast.error(
         "Please Agree to Terms & Conditions before placing your order"
       );
       return;
     }
+
     if (props.isWallet) {
       event.preventDefault();
     }
@@ -39,6 +41,7 @@ export default function StripeCheckout(props) {
     if (!stripe || !elements) {
       return;
     }
+
 
     await elements.fetchUpdates();
 
@@ -61,7 +64,6 @@ export default function StripeCheckout(props) {
         return_url: `${window.location.origin}/payment-success/?orderId=${docId}&mode=online`,
       },
     };
-    console.log("stripeObj", stripeObj);
 
     const result = await stripe.confirmPayment(stripeObj);
 
@@ -74,8 +76,11 @@ export default function StripeCheckout(props) {
       });
 
       toast.error("Payment Rejected");
-      router.push("/payment-failed");
-      console.log(result.error.message);
+      // router.push("/payment-failed");
+
+      console.log(result.error);
+
+
     } else {
       let uid = auth.currentUser?.uid;
       if (uid) {
@@ -86,6 +91,7 @@ export default function StripeCheckout(props) {
         // );
       }
       try {
+
         await axios.post(
           process.env.NEXT_PUBLIC_API_DOMAIN + "/api/stripe-intent/update",
           {
@@ -127,29 +133,29 @@ export default function StripeCheckout(props) {
 
   return (
     <div className="w-full py-2  flex-1 ">
-      {/* <form onSubmit={handleSubmit} id="payment"> */}
-      {!isElementUpdating && (
-        <PaymentElement
-          key={props?.paymentSummary?.totalPayable}
-          options={{ wallets: { applePay: "never", googlePay: "never" } }}
-          onReady={(ele) => {
-            // ele.
-          }}
-        />
-      )}
+      <form onSubmit={handleSubmit} id="payment">
+        {!isElementUpdating && (
+          <PaymentElement
+            key={props?.paymentSummary?.totalPayable}
+            options={{ wallets: { applePay: "auto", googlePay: "never" } }}
+            onReady={(ele) => {
+              // ele.
+            }}
+          />
+        )}
 
-      <PlaceOrder
-        checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry={
-          props.checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry
-        }
-        userNote={props.userNote}
-        setUserNote={props.setUserNote}
-        loading={props.loading}
-        handleSubmit={handleSubmit}
-        isTermsAgreed={props.isTermsAgreed}
-        setIsTermsAgreed={props?.setIsTermsAgreed}
-      />
-      {/* </form> */}
+        <PlaceOrder
+          checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry={
+            props.checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry
+          }
+          userNote={props.userNote}
+          setUserNote={props.setUserNote}
+          loading={props.loading}
+          handleSubmit={handleSubmit}
+          isTermsAgreed={props.isTermsAgreed}
+          setIsTermsAgreed={props?.setIsTermsAgreed}
+        />
+      </form>
     </div>
   );
 }

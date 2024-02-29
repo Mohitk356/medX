@@ -29,11 +29,9 @@ const SearchHeader = ({ cookie }: any) => {
         // Sign-out successful.
         setIsDropDownOpen(false);
         await axios.post("/api/logout");
-        if (pathname === "/") {
-          router.refresh();
-        } else {
-          router.push("/");
-        }
+
+        window.location.replace("/")
+
       })
       .catch((error) => {
         // An error happened.
@@ -98,8 +96,8 @@ const SearchHeader = ({ cookie }: any) => {
               >
                 <div>
                   {userData &&
-                  userData?.profilePic &&
-                  userData?.profilePic?.url ? (
+                    userData?.profilePic &&
+                    userData?.profilePic?.url ? (
                     <div className="w-10 h-10 rounded-full overflow-hidden">
                       <Image
                         src={userData?.profilePic?.url}

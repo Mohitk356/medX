@@ -133,10 +133,10 @@ function SidebarDrawer(props) {
                   >
                     <div className="flex flex-col gap-2 py-1 pl-3">
                       {categories &&
-                        categories?.slice(6)?.map((category) => {
+                        categories?.slice(6)?.map((category, i) => {
                           return (
                             <div
-                              key={category?.category?.id}
+                              key={category?.category?.id + i}
                               className="flex flex-col justify-start"
                             >
                               <div
@@ -198,10 +198,12 @@ function SidebarDrawer(props) {
                               >
                                 {/* subsubcategory start */}
                                 <div className="flex flex-col gap-2 py-1 pl-3">
-                                  {category?.subcategories?.map((subCat) => {
+                                  {category?.subcategories?.map((subCat, i) => {
                                     return (
                                       <div
-                                        key={category?.category?.id}
+                                        key={
+                                          category?.category?.id + "-cat-" + i
+                                        }
                                         className=" flex flex-col justify-start"
                                       >
                                         <div
@@ -265,7 +267,14 @@ function SidebarDrawer(props) {
                                             {subCat.subSubCategories?.map(
                                               (subSubCat) => {
                                                 return (
-                                                  <div className="flex justify-between w-full">
+                                                  <div
+                                                    className="flex justify-between w-full"
+                                                    key={
+                                                      subSubCat +
+                                                      "-subCat-" +
+                                                      subSubCat
+                                                    }
+                                                  >
                                                     <Link
                                                       onClick={() => {
                                                         props.setIsMobile(

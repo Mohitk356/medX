@@ -168,11 +168,10 @@ function NewAddress(props) {
                                   setdialcountry(country);
                                   props.handleChange("ccode", country.code);
                                 }}
-                                className={`${
-                                  active
+                                className={`${active
                                     ? "bg-primary text-white"
                                     : "text-gray-900"
-                                } group flex gap-4 w-full items-center rounded-md px-1 py-1 lg:px-2 lg:py-2 text-sm`}
+                                  } group flex gap-4 w-full items-center rounded-md px-1 py-1 lg:px-2 lg:py-2 text-sm`}
                               >
                                 <ReactCountryFlag
                                   countryCode={country?.icon}
@@ -255,10 +254,9 @@ function NewAddress(props) {
                         <Listbox.Option
                           key={personIdx}
                           className={({ active }) =>
-                            `relative cursor-default select-none py-1 md:py-2 pl-3 sm:pl-5 md:pl-7 pr-2 md:pr-4 ${
-                              active
-                                ? "bg-amber-100 text-amber-900"
-                                : "text-gray-900"
+                            `relative cursor-default select-none py-1 md:py-2 pl-3 sm:pl-5 md:pl-7 pr-2 md:pr-4 ${active
+                              ? "bg-amber-100 text-amber-900"
+                              : "text-gray-900"
                             }`
                           }
                           value={country?.countryName}
@@ -266,14 +264,13 @@ function NewAddress(props) {
                           {({ selected }) => (
                             <>
                               <span
-                                className={`block truncate ${
-                                  selected ? "font-medium" : "font-normal"
-                                }`}
+                                className={`block truncate ${selected ? "font-medium" : "font-normal"
+                                  }`}
                               >
                                 {country?.countryName}
                               </span>
                               {country?.countryName ===
-                              props.userAddress?.country ? (
+                                props.userAddress?.country ? (
                                 <span className="absolute inset-y-0 right-5 flex items-center pr-3 text-amber-600">
                                   <FlatIcon className="flaticon-check text-primary" />
                                 </span>
@@ -321,10 +318,9 @@ function NewAddress(props) {
                         <Listbox.Option
                           key={personIdx}
                           className={({ active }) =>
-                            `relative cursor-default select-none py-1 md:py-2 pl-3 sm:pl-5 md:pl-7 pr-2 md:pr-4 ${
-                              active
-                                ? "bg-amber-100 text-amber-900"
-                                : "text-gray-900"
+                            `relative cursor-default select-none py-1 md:py-2 pl-3 sm:pl-5 md:pl-7 pr-2 md:pr-4 ${active
+                              ? "bg-amber-100 text-amber-900"
+                              : "text-gray-900"
                             }`
                           }
                           value={state}
@@ -332,9 +328,8 @@ function NewAddress(props) {
                           {({ selected }) => (
                             <>
                               <span
-                                className={`block truncate ${
-                                  selected ? "font-medium" : "font-normal"
-                                }`}
+                                className={`block truncate ${selected ? "font-medium" : "font-normal"
+                                  }`}
                               >
                                 {state}
                               </span>
@@ -458,11 +453,11 @@ function NewAddress(props) {
                 </button>
               )}
               {/* <button
-            className="w-[50%] py-1 h-10  border border-primary  hover:bg-white hover:text-black  bg-primary text-white "
-            onClick={props.handleAddressSubmit}
-          >
-            Continue
-          </button> */}
+                className="w-[50%] py-1 h-10  border border-primary  hover:bg-white hover:text-black  bg-primary text-white "
+                onClick={props.handleAddressSubmit}
+              >
+                Continue
+              </button> */}
             </div>
           </div>
         </div>
