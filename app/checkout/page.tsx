@@ -348,7 +348,7 @@ function CheckoutPage() {
       billingAddress: addressToDeliver,
       userNote: userNote || "",
       currency,
-      description: "This IS For Test",
+      description: userNote + ` Pay By ${isCod ? "COD" : "Online"}`,
       autoConfirmOrder: true, // collection payment -> info
       storePickupObj: {},
       metaData: {
@@ -453,6 +453,51 @@ function CheckoutPage() {
   }
 
 
+  const ValidateAddress = () => {
+    // if(addressToDeliver?.country)
+    const {
+      address,
+      city,
+      lat,
+      lng,
+      name,
+      phoneNo,
+      pincode,
+      state,
+      country,
+      stateCode,
+      email,
+    } = addressToDeliver;
+    console.log(addressToDeliver);
+    if (!name) {
+
+      return false;
+    } else if (!email) {
+
+      return false;
+    } else if (!validateEmail(email)) {
+
+      return false;
+    } else if (phoneNo.length != 10) {
+
+      return false;
+    } else if (!country) {
+
+      return false;
+    } else if (!city) {
+
+      return false;
+    } else if (!address) {
+
+      return false;
+    } else if (!pincode) {
+
+      return false;
+    }
+    return true;
+
+  }
+
 
   return (
     <div className="px-body ">
@@ -515,7 +560,7 @@ function CheckoutPage() {
           />
           {/* this is check out Box  */}
           {(paymentSummary && addressToDeliver && currency) ?
-            <Elements stripe={stripePromise} options={{
+            !ValidateAddress() ? null : <Elements stripe={stripePromise} options={{
               mode: 'payment',
               amount: Math.round(isCashBackUsed
                 ? (paymentSummary?.totalPayable - cashBackUsed) *

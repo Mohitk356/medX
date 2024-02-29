@@ -119,22 +119,16 @@ function MakeCheckout({
 
         });
         // /${id}/complete/${clientSecret}
-        setLoading(false)
         if (error) {
-            await updateDoc(doc(db, "orders", id), {
-                "payment.status": "failed",
-                "payment.details": error,
-            });
-
-            // toast.error("Payment Rejected");
+            toast.error("Payment Rejected");
             // router.push("/payment-failed");
             window.location.replace(process.env.NEXT_PUBLIC_API_DOMAIN + `/api/stripe/error/${id}?payment_intent=${data.id}`);
             console.log(error);
-
         } else {
             // Your customer will be redirected to your `return_url`. For some payment
             // methods like iDEAL, your customer will be redirected to an intermediate
-            // site first to authorize the payment, then redirected to the `return_url`.
+            // site first to authorize the payment, then redirected to the `return_url`.\
+            setLoading(false);
         }
     };
 
@@ -249,7 +243,10 @@ function MakeCheckoutType({ setSelectedPaymentMethod, value, allowCod }: { setSe
                 <p className=" font-semibold text-black text-base ">
                     Cash On Delivery
                 </p>
-            </div>}
+                <p className="text-sm ">Pay with cash upon delivery.</p>
+            </div>
+
+            }
             <div className="  flex items-center gap-2 mt-3 mb-4">
                 <div
                     onClick={() => {
@@ -266,7 +263,7 @@ function MakeCheckoutType({ setSelectedPaymentMethod, value, allowCod }: { setSe
                 </div>
 
                 <p className=" font-semibold text-black text-base ">
-                    Pay Online (Card/Wallet)
+                    Pay Online
                 </p>
             </div>
         </>
