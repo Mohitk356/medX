@@ -153,7 +153,10 @@ function MakeCheckout({
                     />
                 </div>
                 {selectedPaymentMethod == "cash" ? null :
-                    <PaymentElement options={{ wallets: { applePay: "auto", googlePay: "never" } }} />
+                    <PaymentElement options={{
+                        wallets: { applePay: "auto", googlePay: "never" },
+                    }
+                    } />
                 }
                 <div className="w-full flex gap-2 items-center justify-between">
                     <div className="flex gap-2">

@@ -84,10 +84,11 @@ const EditDetailsModal = ({
     } else if (!formData.city) {
       toast.error("Enter Your City");
       return false;
-    } else if (!formData.pincode) {
-      toast.error("Enter Your Pincode");
-      return false;
     }
+    // else if (!formData.pincode) {
+    //   toast.error("Enter Your Pincode");
+    //   return false;
+    // }
     // end Validate =========
 
     try {

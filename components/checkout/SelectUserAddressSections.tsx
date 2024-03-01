@@ -435,10 +435,11 @@ export default function SelectUserAddressSection(props) {
                 } else if (!editModalState?.email || !validateEmail(editModalState.email)) {
                   toast.error("Enter a Valid Email ID");
                   return;
-                } else if (!editModalState?.pincode) {
-                  toast.error("Please Enter Your Pincode");
-                  return;
                 }
+                // else if (!editModalState?.pincode) {
+                //   toast.error("Please Enter Your Pincode");
+                //   return;
+                // }
 
                 setIsAddressUpdating(true);
                 await updateDefaultAddress(
