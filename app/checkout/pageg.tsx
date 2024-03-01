@@ -203,13 +203,13 @@ const CheckoutPage = () => {
       return;
     }
 
-    if (
-      addressToDeliver?.pincode &&
-      /^\d+$/.test(addressToDeliver?.pincode) === false
-    ) {
-      toast.error("Enter valid pincode.");
-      return;
-    }
+    // if (
+    //   addressToDeliver?.pincode &&
+    //   /^\d+$/.test(addressToDeliver?.pincode) === false
+    // ) {
+    //   toast.error("Enter valid pincode.");
+    //   return;
+    // }
 
     let orderObj = {
       delivery: paymentSummary?.delivery?.deliveryCost || 1,

@@ -221,10 +221,11 @@ function CheckoutPage() {
     } else if (!address) {
       toast.error("Enter Your Address");
       return false;
-    } else if (!pincode) {
-      toast.error("Enter Your Pincode");
-      return false;
     }
+    //  else if (!pincode) {
+    //   toast.error("Enter Your Pincode");
+    //   return false;
+    // }
 
     if (makeDefaultAddress) {
       updateDefaultAddress({
@@ -325,13 +326,13 @@ function CheckoutPage() {
       return;
     }
 
-    if (
-      addressToDeliver?.pincode &&
-      /^\d+$/.test(addressToDeliver?.pincode) === false
-    ) {
-      toast.error("Enter valid pincode.");
-      return;
-    }
+    // if (
+    //   addressToDeliver?.pincode &&
+    //   /^\d+$/.test(addressToDeliver?.pincode) === false
+    // ) {
+    //   toast.error("Enter valid pincode.");
+    //   return;
+    // }
 
     let orderObj = {
       delivery: paymentSummary?.delivery?.deliveryCost || 1,
@@ -484,9 +485,10 @@ function CheckoutPage() {
       return false;
     } else if (!address) {
       return false;
-    } else if (!pincode) {
-      return false;
     }
+    // else if (!pincode) {
+    //   return false;
+    // }
     return true;
   }
 
@@ -552,44 +554,45 @@ function CheckoutPage() {
           />
           {/* this is check out Box  */}
           {(paymentSummary && addressToDeliver && currency) ?
-            !ValidateAddress() ? <div className="border p-5 rounded-md"> <p className="font-bold">Please Enter Your Valid Details to Continue Payment</p>
-              <br />
-              {ValidateAddressError(addressToDeliver).map((e, i) => {
+            !ValidateAddress() ?
+              <div className=" p-5 rounded-md text-white bg-red-500"> <p className="font-bold">Please enter all the required fields to continue to payment.</p>
+
+                {/* {ValidateAddressError(addressToDeliver).map((e, i) => {
                 return <p className="mb-2 text-red-500">* {e}</p>
-              })}
-            </div> : <Elements stripe={stripePromise} options={{
-              mode: 'payment',
-              amount: Math.round(isCashBackUsed
-                ? (paymentSummary?.totalPayable - cashBackUsed) *
-                currRate
-                : paymentSummary?.totalPayable * currRate) * 100,
-              currency: currency.toLowerCase(),
-            }} >
-              <MakeCheckout
-                stripeData={{
-                  amount: Math.round(isCashBackUsed ? (paymentSummary?.totalPayable - cashBackUsed) * currRate : paymentSummary?.totalPayable * currRate),
-                  currency: currency.toLowerCase(),
-                  user: {
-                    address: addressToDeliver,
-                    name: addressToDeliver?.name,
-                    phone: addressToDeliver?.phoneNo,
-                    email: addressToDeliver?.email,
-                  }
-                }}
-                state={addressToDeliver.state}
-                userNote={userNote}
-                checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry={checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry}
-                handleSubmit={(cod) => placeOrder(cod)}
-                isTermsAgreed={isTermsAgreed}
-                selectedPaymentMethod={selectedPaymentMethod}
-                loading={loading}
-                setLoading={setLoading}
-                setIsTermsAgreed={setIsTermsAgreed}
-                setUserNote={setUserNote}
-                isCashBackUsed={isCashBackUsed}
-                setSelectedPaymentMethod={setSelectedPaymentMethod}
-              />
-            </Elements>
+              })} */}
+              </div> : <Elements stripe={stripePromise} options={{
+                mode: 'payment',
+                amount: Math.round(isCashBackUsed
+                  ? (paymentSummary?.totalPayable - cashBackUsed) *
+                  currRate
+                  : paymentSummary?.totalPayable * currRate) * 100,
+                currency: currency.toLowerCase(),
+              }} >
+                <MakeCheckout
+                  stripeData={{
+                    amount: Math.round(isCashBackUsed ? (paymentSummary?.totalPayable - cashBackUsed) * currRate : paymentSummary?.totalPayable * currRate),
+                    currency: currency.toLowerCase(),
+                    user: {
+                      address: addressToDeliver,
+                      name: addressToDeliver?.name,
+                      phone: addressToDeliver?.phoneNo,
+                      email: addressToDeliver?.email,
+                    }
+                  }}
+                  state={addressToDeliver.state}
+                  userNote={userNote}
+                  checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry={checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry}
+                  handleSubmit={(cod) => placeOrder(cod)}
+                  isTermsAgreed={isTermsAgreed}
+                  selectedPaymentMethod={selectedPaymentMethod}
+                  loading={loading}
+                  setLoading={setLoading}
+                  setIsTermsAgreed={setIsTermsAgreed}
+                  setUserNote={setUserNote}
+                  isCashBackUsed={isCashBackUsed}
+                  setSelectedPaymentMethod={setSelectedPaymentMethod}
+                />
+              </Elements>
             : null}
         </div>
       </div>
