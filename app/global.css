@@ -41,13 +41,14 @@
 
 } */
 
-.overflow-ios{
+.overflow-ios {
   -webkit-overflow-scrolling: touch !important;
 }
 
 .only-carousel .slick-list {
   padding: 10px 0 10px !important;
 }
+
 .only-carousel .slick-track {
   float: left !important;
 }
@@ -57,12 +58,14 @@
 } */
 
 @keyframes breathe {
+
   0%,
   100% {
     transform: scale(1);
     opacity: 0;
     /* filter: opacity(0%); */
   }
+
   50% {
     filter: opacity(100%);
     opacity: 100%;
@@ -79,13 +82,13 @@
 
 
 .hover-effect {
-  transition: transform 0.3s ease; 
+  transition: transform 0.3s ease;
   transform: scale(1.1);
   opacity: 0.7;
 }
 
 .hover-effect-out {
-  transition: transform 0.3s ease; 
+  transition: transform 0.3s ease;
   transform: scale(1);
   opacity: 1;
 }
@@ -145,13 +148,16 @@
 .only-carousel {
   color: black !important;
 }
+
 .no-scroll {
   overflow: hidden;
 }
+
 .nav {
   border: 0.1px solid black;
   opacity: 0.5;
 }
+
 .border-line {
   padding: 0 !important;
 }
@@ -160,6 +166,7 @@
 .slick-next:before {
   color: black !important;
 }
+
 .rc-slider-track {
   position: absolute;
   height: 100%;
@@ -167,13 +174,26 @@
   background-color: #e64040 !important;
   opacity: 100% !important;
 }
+
 .rc-slider-handle {
   background-color: #e64040 !important;
   border-color: #e64040 !important;
   opacity: 100% !important;
   box-shadow: none !important;
 }
+
 .filter-border {
   border: 0.2px solid #e64040;
   /* opacity: 0.5; */
+}
+
+ul.customUl {
+  position: absolute;
+  background: #fff;
+  z-index: 100000;
+}
+
+.stUAList {
+  position: relative;
+  z-index: -1;
 }

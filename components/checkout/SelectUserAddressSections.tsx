@@ -416,22 +416,30 @@ export default function SelectUserAddressSection(props) {
               onClick={async () => {
                 console.log("EDIT MODAL STATTE", editModalState);
 
-                if (
-                  !editModalState?.name ||
-                  !editModalState?.country ||
-                  !editModalState?.state ||
-                  !editModalState?.address ||
-                  !editModalState?.phoneNo ||
-                  !editModalState?.email ||
-                  !editModalState?.pincode
-
-                ) {
-                  toast.error("Fill all the details");
+                // validate DAta 
+                if (!editModalState?.name) {
+                  toast.error("Please Enter Your Name");
                   return;
-                } else if (!validateEmail(editModalState.email)) {
-                  toast.error("Enter Your Valid Email ID");
+                } else if (!editModalState?.country) {
+                  toast.error("Please Select Your Country Name");
+                  return;
+                } else if (!editModalState?.state) {
+                  toast.error("Please Enter Your State");
+                  return;
+                } else if (!editModalState?.address) {
+                  toast.error("Please Enter Your Address");
+                  return;
+                } else if (!editModalState?.phoneNo || editModalState?.phoneNo.length < 7 || editModalState?.phoneNo.length > 12) {
+                  toast.error("Please Enter a Valid Mobile Number");
+                  return;
+                } else if (!editModalState?.email || !validateEmail(editModalState.email)) {
+                  toast.error("Enter a Valid Email ID");
+                  return;
+                } else if (!editModalState?.pincode) {
+                  toast.error("Please Enter Your Pincode");
                   return;
                 }
+
                 setIsAddressUpdating(true);
                 await updateDefaultAddress(
                   editModalState,

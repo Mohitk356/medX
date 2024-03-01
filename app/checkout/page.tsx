@@ -36,6 +36,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
 import { Elements } from "@stripe/react-stripe-js";
 import { StripeElementsOptions } from "@stripe/stripe-js";
+import { ValidateAddressError } from "../../utils/validate/AdddressError";
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC);
 function CheckoutPage() {
   const { data: allowedCountries } = useQuery({
@@ -208,7 +209,7 @@ function CheckoutPage() {
     } else if (!validateEmail(email)) {
       toast.error("Enter A Valid Email ID");
       return false;
-    } else if (phoneNo.length != 10) {
+    } else if (phoneNo.length < 7 || phoneNo.length > 12) {
       toast.error("Enter A Valid Mobile Number");
       return false;
     } else if (!country) {
@@ -470,32 +471,23 @@ function CheckoutPage() {
     } = addressToDeliver;
     console.log(addressToDeliver);
     if (!name) {
-
       return false;
     } else if (!email) {
-
       return false;
     } else if (!validateEmail(email)) {
-
       return false;
-    } else if (phoneNo.length != 10) {
-
+    } else if (phoneNo.length < 7 && phoneNo.length > 12) {
       return false;
     } else if (!country) {
-
       return false;
     } else if (!city) {
-
       return false;
     } else if (!address) {
-
       return false;
     } else if (!pincode) {
-
       return false;
     }
     return true;
-
   }
 
 
@@ -560,7 +552,12 @@ function CheckoutPage() {
           />
           {/* this is check out Box  */}
           {(paymentSummary && addressToDeliver && currency) ?
-            !ValidateAddress() ? null : <Elements stripe={stripePromise} options={{
+            !ValidateAddress() ? <div className="border p-5 rounded-md"> <p className="font-bold">Please Enter Your Valid Details to Continue Payment</p>
+              <br />
+              {ValidateAddressError(addressToDeliver).map((e, i) => {
+                return <p className="mb-2 text-red-500">* {e}</p>
+              })}
+            </div> : <Elements stripe={stripePromise} options={{
               mode: 'payment',
               amount: Math.round(isCashBackUsed
                 ? (paymentSummary?.totalPayable - cashBackUsed) *

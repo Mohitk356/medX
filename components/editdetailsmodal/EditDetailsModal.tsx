@@ -69,23 +69,23 @@ const EditDetailsModal = ({
     if (!formData.fname) {
       toast.error("Enter Your Name");
       return false;
-    } else if (formData.phoneNo.length != 10) {
+    } else if (formData.phoneNo.length < 7 || formData.phoneNo.length > 12) {
       toast.error("Enter A Valid Mobile Number");
       return false;
     } else if (!validateEmail(formData.email)) {
       toast.error("Enter A Valid Email ID");
       return false;
-    } else if (!formData.pincode) {
-      toast.error("Enter Your Pincode");
+    } else if (!formData.country) {
+      toast.error("Select Your Country");
       return false;
     } else if (!formData.address) {
       toast.error("Enter Your Address");
       return false;
-    } else if (!formData.country) {
-      toast.error("Select Your Country");
-      return false;
     } else if (!formData.city) {
       toast.error("Enter Your City");
+      return false;
+    } else if (!formData.pincode) {
+      toast.error("Enter Your Pincode");
       return false;
     }
     // end Validate =========
@@ -163,7 +163,23 @@ const EditDetailsModal = ({
               </div>
             </div>
           </div>
-
+          <div className="flex flex-col md:flex-row gap-4 md:gap-10 lg:gap-16 ">
+            <div className="w-full">
+              <h1 className="text-sm md:text-base font-normal text-neutral-400 uppercase">
+                Email ID
+              </h1>
+              <div className=" w-[100%] rounded-md">
+                <input
+                  type="email"
+                  name="email"
+                  onChange={handleChange}
+                  value={formData.email}
+                  className="w-full h-6 sm:h-8 md:h-10 pb-1 border-b-2  border-neutral-300 focus:outline-none focus:border-neutral-500 text-sm md:text-base font-semibold"
+                  required
+                />
+              </div>
+            </div>
+          </div>
           <div className="flex flex-col md:flex-row gap-4 md:gap-10 lg:gap-16 z-0">
             <div className="w-full">
               <h1 className="text-sm md:text-base font-normal text-neutral-400 uppercase">
@@ -177,8 +193,10 @@ const EditDetailsModal = ({
                   });
                 }}
               >
-                <div className="relative ">
-                  <Listbox.Button className="relative w-full cursor-default  bg-white  pl-3 pr-7  text-left shadow-inner focus:outline-none sm:text-sm py-2 h-10 md:h-10  border-b border-neutral-300 px-2 z-50">
+                <div className="relative z-50">
+                  <Listbox.Button
+
+                    className="relative  w-full cursor-default  bg-white  pl-3 pr-7  text-left shadow-inner focus:outline-none sm:text-sm py-2 h-10 md:h-10  border-b border-neutral-300 px-2 z-50">
                     <span className="block truncate font-semibold">
                       {formData?.country || "Select Country"}
                     </span>
@@ -191,17 +209,18 @@ const EditDetailsModal = ({
                     leave="transition ease-in duration-100"
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
+
                   >
-                    <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm z-50">
+                    <Listbox.Options className="absolute customUl mt-1   max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm z-50">
                       {allowedCountries &&
                         allowedCountries.map((country, personIdx) => (
                           <Listbox.Option
+
                             key={personIdx}
                             className={({ active }) =>
-                              `relative cursor-default select-none py-2 pl-7 pr-4 ${
-                                active
-                                  ? "bg-amber-100 text-amber-900"
-                                  : "text-gray-900"
+                              `relative cursor-default select-none py-2 pl-7 pr-4 z-10 ${active
+                                ? "bg-amber-100 text-amber-900"
+                                : "text-gray-900"
                               }`
                             }
                             value={country?.countryName}
@@ -209,9 +228,8 @@ const EditDetailsModal = ({
                             {({ selected }) => (
                               <>
                                 <span
-                                  className={`block truncate ${
-                                    selected ? "font-medium" : "font-normal"
-                                  }`}
+                                  className={`block truncate ${selected ? "font-medium" : "font-normal"
+                                    }`}
                                 >
                                   {country?.countryName}
                                 </span>
@@ -230,17 +248,19 @@ const EditDetailsModal = ({
               </Listbox>
             </div>
           </div>
+
+
           <div className="flex flex-col md:flex-row gap-4 md:gap-10 lg:gap-16 ">
             <div className="w-full">
               <h1 className="text-sm md:text-base font-normal text-neutral-400 uppercase">
-                Email ID
+                Address
               </h1>
               <div className=" w-[100%] rounded-md">
                 <input
-                  type="email"
-                  name="email"
+                  type="text"
+                  name="address"
                   onChange={handleChange}
-                  value={formData.email}
+                  value={formData.address}
                   className="w-full h-6 sm:h-8 md:h-10 pb-1 border-b-2  border-neutral-300 focus:outline-none focus:border-neutral-500 text-sm md:text-base font-semibold"
                   required
                 />
@@ -250,69 +270,69 @@ const EditDetailsModal = ({
           <div className="flex flex-col md:flex-row gap-4 md:gap-10 lg:gap-16 ">
             <div className="w-full ">
               {formData?.country === "United Arab Emirates" ? (
-                <>
-                  <p className="text-neutral-600 text-[15px] font-semibold">
-                    State <span className="text-primary">*</span>
-                  </p>
-                  <Listbox
-                    value={formData?.city}
-                    onChange={(e: any) => {
-                      setFormData((val: any) => {
-                        return { ...val, city: e };
-                      });
-                    }}
-                  >
-                    <div className="relative ">
-                      <Listbox.Button className="relative w-full cursor-default z-40  bg-white  pl-3 pr-7  text-left shadow-inner focus:outline-none sm:text-sm py-2 h-10 md:h-10  border border-neutral-300 px-2">
-                        <span className="block truncate">
-                          {formData?.city || "Select State"}
-                        </span>
-                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                          <FlatIcon className="flaticon-arrow-down-2" />
-                        </span>
-                      </Listbox.Button>
-                      <Transition
-                        as={Fragment}
-                        leave="transition ease-in duration-100"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                      >
-                        <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                          {constant.states.map((state, personIdx) => (
-                            <Listbox.Option
-                              key={personIdx}
-                              className={({ active }) =>
-                                `relative cursor-default select-none py-2 pl-7 pr-4 ${
-                                  active
+                <div className="cstUAList">
+                  <p className="text-neutral-600 text-[15px] font-semibold">State <span className="text-primary">*</span></p>
+                  <div className="w-full z-10">
+                    <Listbox
+
+                      value={formData?.city}
+                      onChange={(e: any) => {
+                        setFormData((val: any) => {
+                          return { ...val, city: e };
+                        });
+                      }}
+                    >
+
+                      <div className="relative ">
+                        <Listbox.Button className="rw-full h-6 sm:h-8 md:h-10 pb-1 border-b-2  border-neutral-300 focus:outline-none focus:border-neutral-500 text-sm md:text-base font-semibold w-full text-start">
+                          <span className="block truncate">
+                            {formData?.city || "Select State"}
+                          </span>
+                          <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                            <FlatIcon className="flaticon-arrow-down-2" />
+                          </span>
+                        </Listbox.Button>
+                        <Transition
+                          as={Fragment}
+                          leave="transition ease-in duration-100"
+                          leaveFrom="opacity-100"
+                          leaveTo="opacity-0"
+                        >
+                          <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                            {constant.states.map((state, personIdx) => (
+                              <Listbox.Option
+                                key={personIdx}
+                                className={({ active }) =>
+                                  `relative cursor-default select-none py-2 pl-7 pr-4 ${active
                                     ? "bg-amber-100 text-amber-900"
                                     : "text-gray-900"
-                                }`
-                              }
-                              value={state}
-                            >
-                              {({ selected }) => (
-                                <>
-                                  <span
-                                    className={`block truncate ${
-                                      selected ? "font-medium" : "font-normal"
-                                    }`}
-                                  >
-                                    {state}
-                                  </span>
-                                  {state === formData?.state ? (
-                                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
-                                      <FlatIcon className="flaticon-check text-primary" />
+                                  }`
+                                }
+                                value={state}
+                              >
+                                {({ selected }) => (
+                                  <>
+                                    <span
+                                      className={`block truncate ${selected ? "font-medium" : "font-normal"}`}
+                                    >
+                                      {state}
                                     </span>
-                                  ) : null}
-                                </>
-                              )}
-                            </Listbox.Option>
-                          ))}
-                        </Listbox.Options>
-                      </Transition>
-                    </div>
-                  </Listbox>
-                </>
+                                    {state === formData?.state ? (
+                                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
+                                        <FlatIcon className="flaticon-check text-primary" />
+                                      </span>
+                                    ) : null}
+                                  </>
+                                )}
+                              </Listbox.Option>
+                            ))}
+                          </Listbox.Options>
+                        </Transition>
+                      </div>
+
+                    </Listbox>
+                  </div>
+                </div>
               ) : (
                 <div className="w-full">
                   <h1 className="text-sm md:text-base font-normal text-neutral-400 uppercase">
@@ -332,7 +352,6 @@ const EditDetailsModal = ({
               )}
             </div>
           </div>
-
           <div className="flex flex-col md:flex-row gap-4 md:gap-10 lg:gap-16 ">
             <div className="w-full">
               <h1 className="text-sm md:text-base font-normal text-neutral-400 uppercase">
@@ -351,23 +370,7 @@ const EditDetailsModal = ({
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-4 md:gap-10 lg:gap-16 ">
-            <div className="w-full">
-              <h1 className="text-sm md:text-base font-normal text-neutral-400 uppercase">
-                Address
-              </h1>
-              <div className=" w-[100%] rounded-md">
-                <input
-                  type="text"
-                  name="address"
-                  onChange={handleChange}
-                  value={formData.address}
-                  className="w-full h-6 sm:h-8 md:h-10 pb-1 border-b-2  border-neutral-300 focus:outline-none focus:border-neutral-500 text-sm md:text-base font-semibold"
-                  required
-                />
-              </div>
-            </div>
-          </div>
+
 
           <div className="flex flex-col md:items-center md:flex-row gap-4 md:gap-10 lg:gap-16 ">
             <div className="w-[47%]">
@@ -486,9 +489,8 @@ function EditCode({
                     {({ active }) => (
                       <button
                         onClick={() => onChenge(country.code)}
-                        className={`${
-                          active ? "bg-primary text-white" : "text-gray-900"
-                        } group flex gap-4 w-full items-center rounded-md px-1 py-1 lg:px-2 lg:py-2 text-sm`}
+                        className={`${active ? "bg-primary text-white" : "text-gray-900"
+                          } group flex gap-4 w-full items-center rounded-md px-1 py-1 lg:px-2 lg:py-2 text-sm`}
                       >
                         <ReactCountryFlag countryCode={country?.icon} svg />
                         {/* {active ? "active" : "notActive"} */}
