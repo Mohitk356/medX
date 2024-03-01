@@ -7,7 +7,7 @@ import {
 } from "../../utils/databaseService";
 
 import { Fragment, useEffect, useState } from "react";
-import { initialAddress } from "../../utils/utilities";
+import { initialAddress, validateEmail } from "../../utils/utilities";
 import Modal from "../Modal/modal";
 import { Listbox, Transition } from "@headlessui/react";
 import FlatIcon from "../flatIcon/flatIcon";
@@ -421,9 +421,15 @@ export default function SelectUserAddressSection(props) {
                   !editModalState?.country ||
                   !editModalState?.state ||
                   !editModalState?.address ||
-                  !editModalState?.phoneNo
+                  !editModalState?.phoneNo ||
+                  !editModalState?.email ||
+                  !editModalState?.pincode
+
                 ) {
                   toast.error("Fill all the details");
+                  return;
+                } else if (!validateEmail(editModalState.email)) {
+                  toast.error("Enter Your Valid Email ID");
                   return;
                 }
                 setIsAddressUpdating(true);
