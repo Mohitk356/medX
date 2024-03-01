@@ -556,7 +556,6 @@ function CheckoutPage() {
           {(paymentSummary && addressToDeliver && currency) ?
             !ValidateAddress() ?
               <div className=" p-5 rounded-md text-white bg-red-500"> <p className="font-bold">Please enter all the required fields to continue to payment.</p>
-
                 {/* {ValidateAddressError(addressToDeliver).map((e, i) => {
                 return <p className="mb-2 text-red-500">* {e}</p>
               })} */}

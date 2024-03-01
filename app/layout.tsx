@@ -7,6 +7,7 @@ import Navbar from "../components/navbar/Navbar";
 import { ReduxProvider } from "../redux/provider";
 import Providers from "../utils/provider";
 import "./global.css";
+import NextTopLoader from 'nextjs-toploader';
 
 export const metadata = {
   title: "MedX",
@@ -28,7 +29,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={montserrat.variable}>
       <body className="font-outfit relative">
-      
+      <NextTopLoader color="#ff003d" showSpinner={false}  />
         <Script
           async
           src="https://www.googletagmanager.com/gtag/js?id=G-PNFH8YYRH"

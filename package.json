@@ -33,6 +33,7 @@
     "moment": "^2.29.4",
     "next": "^14.1.0",
     "next-redux-wrapper": "^8.1.0",
+    "nextjs-toploader": "^1.6.6",
     "postcss": "^8.4.35",
     "rc-slider": "^10.2.1",
     "react": "18.2.0",
