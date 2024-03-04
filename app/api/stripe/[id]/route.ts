@@ -1,5 +1,5 @@
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { NextRequest, NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../../config/firebase-config";
 
 export const GET = async (req: NextRequest, { params }) => {
@@ -14,15 +14,17 @@ export const GET = async (req: NextRequest, { params }) => {
       description: `Medx Pharmacy - OrderId: ${order.orderId}`,
     });
 
-    return NextResponse.redirect(process.env.NEXT_PUBLIC_API_DOMAIN + `/payment-success?orderId=${params.id}&redirect_status=succeeded`);
+    return NextResponse.redirect(
+      process.env.NEXT_PUBLIC_API_DOMAIN +
+        `/payment-success?orderId=${params.id}&redirect_status=succeeded`
+    );
   } catch (error) {
     console.log(error);
 
     return NextResponse.json({ error: error.toString() });
   }
 
-
   return NextResponse.json({
-    order: payment_intent
+    order: payment_intent,
   });
-}
+};

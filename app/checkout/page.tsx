@@ -23,7 +23,7 @@ import { toast } from "react-toastify";
 import SubtotalComponent from "./SubTotalComponent";
 import CouponSection from "../../components/checkout/CouponSection";
 import CheckoutOrders from "../../components/checkout/CheckoutOrders";
-import { httpsCallable } from "firebase/functions";
+import FbFunctions, { httpsCallable } from "firebase/functions";
 import { auth, db, functions } from "../../config/firebase-config";
 import { getGstAppilicableInfo } from "../../utils/cartUtilities/cartUtility";
 import { useRouter } from "next/navigation";
@@ -80,7 +80,6 @@ function CheckoutPage() {
   const [isCouponApplied, setIsCouponApplied] = useState(false);
   const [appliedCouponAmount, setAppliedCouponAmount] = useState(null);
 
-
   const [userAddress, setUserAddress] = useState(
     (userData && userData?.defaultAddress) || initialAddress
   );
@@ -93,7 +92,6 @@ function CheckoutPage() {
   const [isNewAddress, setIsNewAddress] = useState(
     !(userData && userData?.defaultAddress)
   );
-
 
   console.log(addressToDeliver);
 
@@ -109,11 +107,12 @@ function CheckoutPage() {
       return;
     }
     setIsPaymentSummaryLoading(true);
+    //TODO: Firebase Internal Error --
     const getPaymentSummaryDetails = httpsCallable(
       functions,
       "orders-getOrderPaymentDetails"
     );
-    // alert(JSON.stringify(getPaymentSummaryDetails));
+
     const isGst = await getGstAppilicableInfo();
     let data = {
       address: {
@@ -174,7 +173,6 @@ function CheckoutPage() {
     setPaymentSummary(res.data);
     setOverLayLoading(false);
   }
-
 
   // on handel submitt data
 
@@ -244,8 +242,6 @@ function CheckoutPage() {
     });
   }
 
-
-
   useEffect(() => {
     getPaymentSummary();
   }, []);
@@ -266,8 +262,6 @@ function CheckoutPage() {
     }
   }, [addressToDeliver?.state]);
 
-
-
   function checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry() {
     let response = false;
     if (paymentSummary) {
@@ -284,8 +278,6 @@ function CheckoutPage() {
     }
     return response;
   }
-
-
 
   async function placeOrder(isCod: boolean) {
     // const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC);
@@ -320,7 +312,7 @@ function CheckoutPage() {
     if (
       addressToDeliver?.email &&
       /^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/.test(addressToDeliver?.email) ===
-      false
+        false
     ) {
       toast.error("Enter valid email.");
       return;
@@ -335,7 +327,10 @@ function CheckoutPage() {
     // }
 
     let orderObj = {
-      delivery: paymentSummary?.delivery?.deliveryCost || 1,
+      delivery:
+        addressToDeliver?.state === "Dubai"
+          ? 0
+          : paymentSummary?.delivery?.deliveryCost || 1,
       couponDiscount: 0,
       defaultGst: paymentSummary?.totalGst || 0,
       totalAmountToPaid: paymentSummary?.totalPayable,
@@ -377,8 +372,8 @@ function CheckoutPage() {
       msgId: auth.currentUser?.uid
         ? doc(collection(db, "chats", auth.currentUser?.uid, "messages")).id
         : sessionStorage.getItem("guestLogin")
-          ? null
-          : "",
+        ? null
+        : "",
       userName: userData?.name || addressToDeliver?.name,
       region: "",
     };
@@ -408,8 +403,6 @@ function CheckoutPage() {
     if (saveAddress) {
       await addAddressToUser({ ...addressToDeliver, createdAt: new Date() });
     }
-
-
 
     orderId = (await addDoc(collection(db, "orders"), orderObj)).id;
     if (isCod) {
@@ -450,10 +443,8 @@ function CheckoutPage() {
       setLoading(false);
 
       return orderId;
-
     }
   }
-
 
   const ValidateAddress = () => {
     // if(addressToDeliver?.country)
@@ -490,8 +481,7 @@ function CheckoutPage() {
     //   return false;
     // }
     return true;
-  }
-
+  };
 
   return (
     <div className="px-body ">
@@ -553,34 +543,53 @@ function CheckoutPage() {
             appliedCouponAmount={appliedCouponAmount}
           />
           {/* this is check out Box  */}
-          {(paymentSummary && addressToDeliver && currency) ?
-            !ValidateAddress() ?
-              <div className=" p-5 rounded-md text-white bg-red-500"> <p className="font-bold">Please enter all the required fields to continue to payment.</p>
+          {paymentSummary && addressToDeliver && currency ? (
+            !ValidateAddress() ? (
+              <div className=" p-5 rounded-md text-white bg-red-500">
+                {" "}
+                <p className="font-bold">
+                  Please enter all the required fields to continue to payment.
+                </p>
                 {/* {ValidateAddressError(addressToDeliver).map((e, i) => {
                 return <p className="mb-2 text-red-500">* {e}</p>
               })} */}
-              </div> : <Elements stripe={stripePromise} options={{
-                mode: 'payment',
-                amount: Math.round(isCashBackUsed
-                  ? (paymentSummary?.totalPayable - cashBackUsed) *
-                  currRate
-                  : paymentSummary?.totalPayable * currRate) * 100,
-                currency: currency.toLowerCase(),
-              }} >
+              </div>
+            ) : (
+              <Elements
+                stripe={stripePromise}
+                options={{
+                  mode: "payment",
+                  amount:
+                    Math.round(
+                      isCashBackUsed
+                        ? (paymentSummary?.totalPayable - cashBackUsed) *
+                            currRate
+                        : paymentSummary?.totalPayable * currRate
+                    ) * 100,
+                  currency: currency.toLowerCase(),
+                }}
+              >
                 <MakeCheckout
                   stripeData={{
-                    amount: Math.round(isCashBackUsed ? (paymentSummary?.totalPayable - cashBackUsed) * currRate : paymentSummary?.totalPayable * currRate),
+                    amount: Math.round(
+                      isCashBackUsed
+                        ? (paymentSummary?.totalPayable - cashBackUsed) *
+                            currRate
+                        : paymentSummary?.totalPayable * currRate
+                    ),
                     currency: currency.toLowerCase(),
                     user: {
                       address: addressToDeliver,
                       name: addressToDeliver?.name,
                       phone: addressToDeliver?.phoneNo,
                       email: addressToDeliver?.email,
-                    }
+                    },
                   }}
                   state={addressToDeliver.state}
                   userNote={userNote}
-                  checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry={checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry}
+                  checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry={
+                    checkIfThereIsAnyProductWhichIsNotDeliverableToSelectedCountry
+                  }
                   handleSubmit={(cod) => placeOrder(cod)}
                   isTermsAgreed={isTermsAgreed}
                   selectedPaymentMethod={selectedPaymentMethod}
@@ -592,7 +601,8 @@ function CheckoutPage() {
                   setSelectedPaymentMethod={setSelectedPaymentMethod}
                 />
               </Elements>
-            : null}
+            )
+          ) : null}
         </div>
       </div>
     </div>
