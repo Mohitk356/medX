@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { NextResponse, NextRequest } from "next/server";
 var currencyExchangeRate = require("currency-exchange-rate");
 const converter = require("currency-exchanger-js");
@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     } else {
       value = await axios
         .get(
-          `https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/aed.json`
+          `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/aed.json`
         )
         .then((res) => {
           return res.data?.aed[to.toLowerCase()];
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
 
     // cookies().set('uid', "")
   } catch (error) {
-    console.log("ERROR", error);
+    console.log("ERROR", error.request.url, error.response);
 
     return NextResponse.json({ status: false });
   }
