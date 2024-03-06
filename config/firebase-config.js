@@ -7,7 +7,7 @@ import { getFunctions } from "firebase/functions";
 
 export const firebaseConfig = {
   apiKey: "AIzaSyB5q1YTp-xcL7Q7iFzMCa0NyD0rPshBuqI",
-  authDomain: "medxpharmacy.com",
+  authDomain: "www.medxpharmacy.com",
   projectId: "bwi-medex",
   storageBucket: "bwi-medex.appspot.com",
   messagingSenderId: "117018751251",
