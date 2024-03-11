@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 import { makeLeastSignificantDigitZero } from "../../../utils/utilities";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../../config/firebase-config";
+
 export interface IStripeData {
   currency: string;
   amount: number;
@@ -161,7 +162,12 @@ function MakeCheckout({
         {selectedPaymentMethod == "cash" ? null : (
           <PaymentElement
             options={{
-              wallets: { applePay: "auto", googlePay: "never" },
+              wallets: { applePay: "auto", googlePay: "auto" },
+              terms: {
+                applePay: "always",
+                googlePay: "always",
+              },
+              layout: { type: "accordion" },
             }}
           />
         )}
@@ -208,6 +214,7 @@ function MakeCheckout({
             if (isCashBackUsed && setSelectedPaymentMethod) {
               setSelectedPaymentMethod("cash");
             }
+
             if (selectedPaymentMethod == "cash") {
               handleSubmit(true);
             } else {
